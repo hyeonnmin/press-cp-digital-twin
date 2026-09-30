@@ -6,7 +6,7 @@
 
 현재 Phase: 0 — 저장소·개발환경
 
-현재 작업: Isaac Sim 개발환경 확인 
+현재 작업: Isaac Sim 개발환경 확인
 
 
 
@@ -34,6 +34,14 @@
 
 \- GitHub origin/main 연결 및 첫 Push 성공
 
+\- Isaac Sim 6.0.1 및 isaac-sim.bat 실행 방식 사용자 확인
+
+\- 환경 확인 스크립트를 GUI Script Editor에서 2회 실행 성공
+
+\- 내부 Python 3.12.13 확인
+
+\- 현재 익명 Stage의 Z-up, metersPerUnit 1.0 확인
+
 
 
 \## 진행 중
@@ -52,8 +60,6 @@
 
 \- 대용량 USD Asset 관리 방식
 
-\- Isaac Sim 정확한 버전과 실행 방식
-
 \- Python·OCR 프레임워크 환경
 
 \- Stage Up-axis와 metersPerUnit
@@ -63,12 +69,6 @@
 
 
 \## 다음 작업
-
-\- 저장소 기본 구조의 Commit 확인
-
-\- GitHub 원격 저장소 연결
-
-\- 실제 개발환경을 docs/real\_environment.md에 기록
 
 
 
