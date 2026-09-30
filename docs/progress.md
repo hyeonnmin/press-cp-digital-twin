@@ -6,7 +6,7 @@
 
 현재 Phase: 0 — 저장소·개발환경
 
-현재 작업: 기본 폴더와 작업 규칙·진행 문서 준비
+현재 작업: Isaac Sim 개발환경 확인 
 
 
 
@@ -28,6 +28,12 @@
 
 \- 첫 Commit 후 working tree clean 확인
 
+\- 폴더 생성·문서 작성·Commit
+
+\- 기본 구조·작업 문서 Commit: 9080cd2
+
+\- GitHub origin/main 연결 및 첫 Push 성공
+
 
 
 \## 진행 중
@@ -43,8 +49,6 @@
 
 
 \## 미확인·미완료
-
-\- GitHub 원격 저장소 연결
 
 \- 대용량 USD Asset 관리 방식
 
