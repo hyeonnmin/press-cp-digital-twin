@@ -4,9 +4,9 @@
 
 최종 갱신: 2026-09-30
 
-현재 Phase: 0 — 저장소·개발환경
+현재 Phase: 0 — 마무리 문서 저장 중
 
-현재 작업: Isaac Sim 개발환경 확인
+현재 작업: 최종 환경 기록과 README 검토·Commit
 
 
 
@@ -42,6 +42,14 @@
 
 \- 현재 익명 Stage의 Z-up, metersPerUnit 1.0 확인
 
+\- GPU: NVIDIA GeForce RTX 4070 SUPER, 12282 MiB
+
+\- GPU Driver: 591.86
+
+\- Isaac Sim 재시작 후 환경 확인 스크립트 실행 성공
+
+\- 환경 확인 코드·기록 Commit: f54f878, GitHub 동기화 확인
+
 
 
 \## 진행 중
@@ -69,6 +77,10 @@
 
 
 \## 다음 작업
+
+\- 최종 문서의 Commit·Push 확인 후 Phase 0 완료 기록
+
+\- Phase 1: 대표 실제 CP 이미지에서 패널·숫자 영역 분석 시작
 
 
 

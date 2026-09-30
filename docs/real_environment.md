@@ -24,9 +24,11 @@
 
 | Isaac Sim 내부 Python | 3.12.13 | 스크립트 출력 |
 
-| GPU | 미확인 | 추가 확인 필요 |
+| GPU | NVIDIA GeForce RTX 4070 SUPER | nvidia-smi 출력 |
 
-| GPU Driver | 미확인 | 추가 확인 필요 |
+| GPU Driver | 591.86 | nvidia-smi 출력 |
+
+| GPU 메모리 | 12282 MiB | nvidia-smi 출력 |
 
 
 
@@ -58,7 +60,7 @@
 
 \- 검증 결과: 동일 앱 세션에서 2회 CHECK\_OK 확인
 
-\- 앱 재시작 후 실행: 미검증
+\- 앱 재시작 후 실행: CHECK\_OK 확인
 
 \- Stage 생성·수정·저장 기능: 미검증
 
