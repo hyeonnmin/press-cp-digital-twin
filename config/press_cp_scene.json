@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reference": {"video": "IMG_2631.MOV", "sha256": "e20d0d72bf3cc8522939055fc053f2edadd9ad0cb6e3022489755ccd9742139b", "frame_seconds": 4.0, "resolution": [1920,1080], "status": "영상에서 수동으로 읽은 근사 bbox. 기존 Split 미확인, 예비 외형 재현 전용."},
+  "units": {"up_axis":"Z", "meters_per_unit":1.0, "front":"-Y", "status":"모든 m 치수는 가상 카메라 가정에 따른 임시 모델링 치수이며 실측값이 아님"},
+  "cabinet": {"width":1.77,"bottom":0.025,"top":1.525,"depth":0.3,"seam_x":-0.023,"door_gap":0.008,"door_thickness":0.024,"module_depth":0.023,"bevel":0.003},
+  "camera": {
+    "status":"실제 렌즈·거리 미확인. 1800 px 초점거리와 20도 하향 시점을 가정한 투시 배치. bbox 중심을 전면 평면에 역투영함.",
+    "resolution":[1920,1080], "focal_px":1800.0,
+    "reference":{"position":[0,-2,1.6],"target":[0,0,0.8720595315]},
+    "overview":{"position":[2.8,-4.2,2.5],"target":[0.1,0.1,0.85],"focal_mm":42.0},
+    "detail":{"position":[-0.53,-0.75,1.33],"target":[-0.52,0,1.29],"focal_mm":48.0}
+  },
+  "lighting":{"status":"영상 대비를 위한 임시 광원, 실제 위치·광도 아님","dome_intensity":560,"key":{"position":[-1.5,-1.2,2.8],"target":[0,0,0.8],"width":2.5,"height":1.7,"intensity":1400},"fill":{"position":[2,-0.8,2.0],"target":[0,0,0.8],"width":1.8,"height":1.5,"intensity":510}},
+  "materials": {
+    "enamel":{"color":[0.62,0.54,0.43],"roughness":0.48,"metallic":0.08},
+    "cabinet_side":{"color":[0.43,0.43,0.39],"roughness":0.55,"metallic":0.12},
+    "black":{"color":[0.035,0.040,0.037],"roughness":0.38},
+    "screen":{"color":[0.008,0.018,0.010],"roughness":0.26},
+    "button_black":{"color":[0.025,0.028,0.026],"roughness":0.52},
+    "silver":{"color":[0.42,0.44,0.42],"roughness":0.32,"metallic":0.7},
+    "ivory":{"color":[0.64,0.63,0.58],"roughness":0.65},
+    "red":{"color":[0.40,0.018,0.012],"roughness":0.3},
+    "green":{"color":[0.08,0.20,0.013],"roughness":0.26,"opacity":0.38},
+    "green_led":{"color":[0.14,0.32,0.005],"roughness":0.4,"emission":[1.6,2.4,0.02]},
+    "amber_led":{"color":[0.38,0.14,0.006],"roughness":0.4,"emission":[1.4,0.65,0.015]},
+    "red_led":{"color":[0.3,0.006,0.005],"emission":[1.5,0.015,0.01],"roughness":0.4},
+    "off_segment":{"color":[0.018,0.027,0.017],"roughness":0.5},
+    "floor":{"color":[0.27,0.29,0.28],"roughness":0.9},
+    "wall":{"color":[0.40,0.43,0.42],"roughness":0.9},
+    "machine":{"color":[0.28,0.32,0.30],"roughness":0.5,"metallic":0.45},
+    "pipe_green":{"color":[0.02,0.10,0.07],"roughness":0.4,"metallic":0.25},
+    "valve_blue":{"color":[0.012,0.055,0.12],"roughness":0.35,"metallic":0.4}
+  },
+  "display":{"status":"원본을 참고한 초기 화면 예시. 전사 검증된 정답이나 실제 생성 범위가 아님. 문자열 그대로 보존.","slot_y":[0.15,0.31],"main_x":0.72,"main_width":0.40,"digit_height":0.105,"vacuum_main_x":0.60,"vacuum_main_width":0.67,"vacuum_digit_height":0.12},
+  "panels":[
+    {"id":"panel_1","number":1,"door":"left","label_bbox":[455,56,592,88],"stop_center":[754,225],"stop_radius_px":43,"number_bbox":[826,203,877,259],"modules":[{"id":"temperature","bbox":[290,126,433,260],"text":["195.5","34.3"]},{"id":"pressure","bbox":[462,125,602,259],"text":["7.5","54.9"]},{"id":"vacuum","bbox":[637,125,704,257],"text":["7.0","5.0"]}]},
+    {"id":"panel_2","number":2,"door":"left","label_bbox":[476,274,608,305],"stop_center":[765,440],"stop_radius_px":41,"number_bbox":[829,413,882,468],"modules":[{"id":"temperature","bbox":[315,343,454,468],"text":["176.9","49.4"]},{"id":"pressure","bbox":[482,341,615,467],"text":["5.3","45.2"]},{"id":"vacuum","bbox":[648,342,716,465],"text":["100.1","5.0"]}]},
+    {"id":"panel_3","number":3,"door":"left","label_bbox":[493,478,624,507],"stop_center":[776,638],"stop_radius_px":40,"number_bbox":[832,609,887,662],"modules":[{"id":"temperature","bbox":[341,545,474,662],"text":["195.2","55.2"]},{"id":"pressure","bbox":[500,543,629,659],"text":["7.4","56.3"]},{"id":"vacuum","bbox":[662,544,726,661],"text":["4.8","5.0"]}]},
+    {"id":"panel_4","number":4,"door":"left","label_bbox":[511,672,636,697],"stop_center":[785,824],"stop_radius_px":39,"number_bbox":[837,791,889,842],"modules":[{"id":"temperature","bbox":[364,733,489,846],"text":["100.0","46.5"]},{"id":"pressure","bbox":[519,730,641,842],"text":["6.1","31.0"]},{"id":"vacuum","bbox":[676,731,736,842],"text":["4.8","5.0"]}]},
+    {"id":"panel_5","number":5,"door":"left","label_bbox":[534,850,649,875],"stop_center":[793,999],"stop_radius_px":38,"number_bbox":[777,1037,825,1076],"modules":[{"id":"temperature","bbox":[386,907,509,1012],"text":["110.6","45.2"]},{"id":"pressure","bbox":[536,905,656,1008],"text":["1.8","17.6"]},{"id":"vacuum","bbox":[687,904,746,1006],"text":["101.0","5.0"]}]},
+    {"id":"panel_6","number":6,"door":"right","label_bbox":[1259,471,1382,496],"stop_center":[1544,638],"stop_radius_px":39,"number_bbox":[1578,597,1625,644],"modules":[{"id":"temperature","bbox":[1101,537,1222,655],"text":["37.0","50.0"]},{"id":"pressure","bbox":[1260,536,1385,652],"text":["0.0","0.0"]},{"id":"vacuum","bbox":[1416,532,1478,649],"text":["100.5","1.0"]}]},
+    {"id":"panel_7","number":7,"door":"right","label_bbox":null,"stop_center":[1527,813],"stop_radius_px":38,"number_bbox":[1568,785,1615,830],"modules":[{"id":"temperature","bbox":[1098,725,1214,835],"text":["195.0","80.9"]},{"id":"pressure","bbox":[1249,727,1366,832],"text":["7.4","54.4"]},{"id":"vacuum","bbox":[1403,720,1469,832],"text":["0.2","5.0"]}]}
+  ],
+  "fittings":{"hmi_bbox":[1138,98,1561,424],"hmi_screen_bbox":[1180,134,1529,390],"operation_label_bbox":[1196,26,1467,62],"safety_bbox":[943,108,1137,389],"machine_label_bbox":[775,125,923,195],"inspection_bbox":[760,9,924,120],"green_cover_bbox":[1244,649,1390,735],"handles":[[846,948,895,1115],[1007,947,1053,1115]],"loader_label_bbox":[1495,956,1584,995],"loader_buttons":[[1170,922],[1241,914],[1308,914],[1378,921],[1444,920],[1173,986],[1240,984],[1302,984],[1370,984],[1440,992]]},
+  "environment":{"status":"영상 가장자리에서 보인 형상을 단순화한 주변 구조. 숨겨진 배관과 설비 기능은 추정하지 않음","floor_z":-0.10,"wall_y":0.95,"pipe_x":[1.00,1.25,1.48],"pipe_y":0.32,"valve_z":[1.29,1.37,1.40]}
+}

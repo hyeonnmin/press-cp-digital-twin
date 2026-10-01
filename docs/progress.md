@@ -2,9 +2,23 @@
 
 최종 갱신: 2026-09-30 (Asia/Seoul)
 
-현재 Phase: 2 — Base Scene 착수 준비
+현재 Phase: 2 — 전체 정적 Base Scene 구축·실행 검증 완료, 영상 유사성 정량 검증은 남음
 
-현재 작업: Phase 1 종료 문서 작성 완료, Phase 2 첫 Geometry 작업 준비
+현재 작업: 영상 기반 7 Panel·21 Module·42 Slot과 제어반·HMI·조작부·주변 구조 제작 완료. 다음은 주요 Slot의 실영상·렌더 Crop 비교.
+
+## 최신 결과 — 전체 CP 가상환경
+
+- 사용자 요청에 따라 Panel 1 시험 모델에서 전체 제어반과 주변 환경으로 확대했다. 완료 기준은 전체 Scene을 실제 Isaac Sim에서 생성·저장·재열기하고 렌더로 확인하는 것이다.
+- 진입점: `isaac_sim/stages/press_cp_main.usda`. 영상 비교용 `reference`, 전체 사선 `overview`, 근접 `detail` Camera를 제공한다.
+- 좌측 5개·우측 2개 Panel, 21개 계측기, 42개 발광 숫자열, 문·손잡이·경첩·버튼·HMI·명판·초록 커버 및 주변 배관·바닥·벽을 구성했다.
+- `config/press_cp_scene.json`에서 배치·문자열·Camera·Light·Material을 관리한다. 제어반·주변 USD와 Python 생성 로직을 분리했으며 Asset·텍스처는 상대 참조한다.
+- 설치된 Isaac Sim 6.1.0 RC의 Standalone headless에서 2026-09-30 14:31 KST 생성 실행과 별도 프로세스 재열기가 모두 `FULL_SCENE_OK`, 종료 코드 0으로 통과했다. Z-up·단위, 7/21/42 개수·고유 ID·배치·문자열·텍스처 참조를 확인했다.
+- 1920×1080의 세 시점과 재열기 렌더를 기록했다. 기준·전체 렌더에서 전체 배치와 숫자, Panel 7 커버 주변 표시를 직접 확인했다. 코드·Config·Asset·렌더 Hash 및 실행 조건은 `outputs/full_scene/build_report.json`, `reopen_report.json`에 있다.
+- 중간 실행에서 Viewport 준비 시간 초과 뒤 Fabric native crash가 1회 발생했다. 실제 렌더 프레임을 기다리도록 보완한 뒤 최종 두 실행은 통과했다. 근본 원인은 확정하지 않았다.
+- 치수·가상 카메라·광원은 영상 재현용 근사값이다. HMI·안전 안내문·보이지 않는 주변 구조는 모식 표현이며 초기 문자열은 검증된 실영상 정답이 아니다.
+- 사용법·근거·한계: [phase2_full_scene.md](phase2_full_scene.md). 기존 Panel 1 결과는 아래에 작업 이력으로 유지한다.
+
+다음 작업 하나: **주요 Slot의 실영상·렌더 Crop을 대응시켜 위치·크기·색상·가림을 비교한다.** 최종 보정 조건을 고정하기 전에 기존 영상의 Train/Test 사용 구간을 확인한다. 동적 표시값 변경과 학습용 데이터 생성은 후속 Phase로 남긴다.
 
 ## Phase 0 — 완료
 
@@ -56,19 +70,29 @@
 - 기준 카메라에서의 Base Scene 비교 후 카메라·조명 등의 다양화를 단계적으로 진행한다.
 - 실사 학습 모델과 합성 학습 모델은 동일한 Real Test에서 비교한다. Mixed는 추가 비교 조건으로 유지한다.
 
-## Phase 2 — 착수 준비, 미구현
+## Phase 2 초기 작업 이력 — Panel 1 Geometry
 
-### 다음 작업 하나
+### 완료한 작업과 검증
 
-**Panel 1의 온도·압력·진공 Module 배치를 단순 Geometry로 구성하고 USD로 저장한다.**
+- 지정된 로컬 MOV에서 2·4·10·18초 프레임 추출, 4·18초 영상 직접 확인. 4초 프레임의 수동 근사 bbox로 배치 구성.
+- `config/panel_1_geometry.json`에 영상 기준, 임시 배율·깊이, 주요 표시 영역, 검토용 Camera·Light·Material 기록.
+- `isaac_sim/assets/cp_panel/panel_1_geometry.usda`와 `isaac_sim/stages/panel_1_preview.usda` 생성. Asset과 Scene/Python 로직 분리.
+- 실제 Isaac Sim에서 모듈 3개·주요 표시 영역 6개, 좌우·위아래 관계, 표시 영역의 모듈 내 포함과 전면 배치 확인.
+- 디스크 열기→앱 열기→저장→닫기→재열기 검사 통과. 별도 새 프로세스의 `--reopen-only`도 통과. Z-up·metersPerUnit 1.0 유지.
+- 최종 두 실행의 종료 코드 0, `PANEL1_GEOMETRY_OK`, 1200×600 PNG 기록·디코딩·시각 확인 완료.
+- 상세 결과: `outputs/phase2_validation/build_report.json`, `reopen_report.json` (Git 제외). 코드·Config·USD·PNG Hash, 원본 영상 Hash, 적용 Config, 버전과 실행 모드 기록.
+- 구현·실행법·임시 치수·공식 API 근거: [phase2_panel_1.md](phase2_panel_1.md). 주요 결정: [decisions.md](decisions.md).
 
-실행환경: Isaac Sim 6.0.1, GUI Script Editor, Z-up, metersPerUnit 1.0.
+### 환경 차이와 남은 한계
 
-먼저 Windows 저장소의 AGENTS.md·폴더·Config를 확인한다. 제어반 바탕과 Panel 1의 세 Module 및 각 두 표시 영역을 만든다. 실제 치수가 없으므로 수정 가능한 임시 크기로 시작하고 근거를 기록한다.
+- 직접 확인한 설치 버전은 **6.1.0-rc.26+release.49347.2d230af4.gl**이다. 기존 6.0.1 기록과 다르며 이번 작업에서 설치를 변경하지 않았다.
+- Windows GUI 제어 연결 실패로 실제 검증은 **Standalone headless**에서 수행했다. GUI Script Editor용 동일 함수 실행법은 제공했으나 이번 GUI 직접 실행은 미검증이다.
+- 배경판은 Panel 1 주변 일부, 크기는 실측값이 아닌 임시값이다. 녹색·황색 사각형은 표시 영역 placeholder이며 숫자 구현이 아니다.
+- 이 초기 작업 시점에는 전체 제어반과 7 Panel 확장이 미완료였다. 이후 확장 결과는 위 최신 결과에 기록했다. 실영상과의 정량 유사성 검증은 여전히 남아 있다.
 
-완료 기준: USD 저장·재열기 후 Stage 축·단위가 유지되며, Panel 1의 세 Module과 여섯 주요 표시 영역이 관찰한 좌우·위아래 관계대로 존재한다. 사용한 크기와 임시값 여부가 문서화된다.
+### 당시 계획 — 이후 전체 환경 제작 요청으로 확대
 
-이후 Camera·Lighting과 실제/합성 영상 비교, 나머지 Panel 확대를 진행한다. 숫자 변경 자동화는 Phase 3에서 수행한다. 이번 종료 작업에서는 Stage나 코드를 생성하지 않았다.
+**Panel 1의 가상 투시 Camera를 구성해 참조 프레임과 모듈·표시 영역의 위치·크기·원근을 비교한다.** 현재 정면 직교 Camera는 배치 검토용이다. 최종 실험용 보정 프레임은 Train/Test 사용 이력을 확인한 뒤 고정한다. 이후 조명·Material, 나머지 Panel 확대를 진행하며 숫자 자동화는 Phase 3에서 수행한다.
 
 ## 후속 작업으로 넘긴 미확인 항목
 
@@ -82,10 +106,9 @@
 | 대용량 USD Asset 관리 방식 | 대용량 Asset 추가 전 |
 | OCR 학습용 Python·프레임워크 환경 | Phase 6 준비 |
 
-## Windows 저장소 반영 상태
+## Windows 저장소 반영 상태 — 직접 확인
 
-- 이번 갱신 파일: docs/real_environment.md, docs/progress.md.
-- 이번 작성본의 Windows 저장소 반영과 Commit·Push는 미확인이다. 앞선 문서 변경의 Commit·Push 성공 여부도 이번 대화에서 보고받지 않았다.
-- 권장 Commit 메시지: docs: close phase 1 with phone video reference.
-- 마지막 확인된 Commit은 Phase 0의 af11aaa이다. 새로운 Commit ID를 임의로 기록하지 않는다.
-- 로컬 반영 및 Commit·Push 후 실제 결과를 기준으로 이 절을 갱신한다. 문서 변경은 Windows 저장소·Notion·다른 프로젝트 소스에 자동 반영되지 않는다.
+- 작업 시작 시 `git status --short`는 비어 있었고, HEAD는 `4faf060` — `docs: close phase 1 with phone video reference`였다.
+- 이번 Phase 2 코드·Config·USD·문서는 현재 Windows 저장소에 생성·수정했다. Commit·Push는 하지 않았다.
+- 원본 MOV, 추출 프레임, 디코더, 상세 보고서와 렌더는 일반 Git에 추가하지 않는다.
+- GitHub·Notion·다른 프로젝트 소스의 동기화는 수행하지 않았다.

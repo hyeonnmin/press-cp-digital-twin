@@ -1,0 +1,252 @@
+#usda 1.0
+(
+    customLayerData = {
+        string config_sha256 = "1a47ccc427f83c4f6cd575de5fe05c6750e49570422f1d888487fc050e90a1f2"
+        string dimensions_status = "temporary_not_measured"
+        string generator = "press-cp-digital-twin/panel_1_geometry/v1"
+        string generator_sha256 = "2ae67d209a63f552e0afcaded8b542efb1c0c4dbe8cf85b8f354bf1e09b6b293"
+        double reference_frame_seconds = 4
+        string use = "preliminary_geometry_not_training_data"
+    }
+    defaultPrim = "Panel1"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Panel1"
+{
+    def "Looks"
+    {
+        def Material "backboard"
+        {
+            token outputs:surface.connect = </Panel1/Looks/backboard/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.6, 0.57, 0.48)
+                float inputs:roughness = 0.8
+                token outputs:surface
+            }
+        }
+
+        def Material "body"
+        {
+            token outputs:surface.connect = </Panel1/Looks/body/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.018, 0.022, 0.024)
+                float inputs:roughness = 0.65
+                token outputs:surface
+            }
+        }
+
+        def Material "controls"
+        {
+            token outputs:surface.connect = </Panel1/Looks/controls/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.58, 0.58, 0.55)
+                float inputs:roughness = 0.8
+                token outputs:surface
+            }
+        }
+
+        def Material "upper_placeholder"
+        {
+            token outputs:surface.connect = </Panel1/Looks/upper_placeholder/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.22, 0.42, 0.035)
+                float inputs:roughness = 0.8
+                token outputs:surface
+            }
+        }
+
+        def Material "lower_placeholder"
+        {
+            token outputs:surface.connect = </Panel1/Looks/lower_placeholder/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.5, 0.23, 0.035)
+                float inputs:roughness = 0.8
+                token outputs:surface
+            }
+        }
+    }
+
+    def Cube "Backboard" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </Panel1/Looks/backboard>
+        double size = 1
+        float3 xformOp:scale = (0.47, 0.012, 0.185)
+        double3 xformOp:translate = (0, 0.006, 0.0045000000000000005)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Xform "temperature" (
+        customData = {
+            string module_id = "temperature"
+        }
+    )
+    {
+        def Cube "Body" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </Panel1/Looks/body>
+            double size = 1
+            float3 xformOp:scale = (0.143, 0.018, 0.134)
+            double3 xformOp:translate = (-0.1335, -0.009, -0.001)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "slot_1" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                string slot_id = "panel_1/temperature/slot_1"
+                string status = "placeholder_no_digits"
+            }
+        )
+        {
+            rel material:binding = </Panel1/Looks/upper_placeholder>
+            double size = 1
+            float3 xformOp:scale = (0.06, 0.001, 0.021)
+            double3 xformOp:translate = (-0.109, -0.019, 0.0455)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "slot_2" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                string slot_id = "panel_1/temperature/slot_2"
+                string status = "placeholder_no_digits"
+            }
+        )
+        {
+            rel material:binding = </Panel1/Looks/lower_placeholder>
+            double size = 1
+            float3 xformOp:scale = (0.06, 0.001, 0.02)
+            double3 xformOp:translate = (-0.109, -0.019, 0.023)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+
+    def Xform "pressure" (
+        customData = {
+            string module_id = "pressure"
+        }
+    )
+    {
+        def Cube "Body" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </Panel1/Looks/body>
+            double size = 1
+            float3 xformOp:scale = (0.14, 0.018, 0.134)
+            double3 xformOp:translate = (0.037, -0.009, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "slot_1" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                string slot_id = "panel_1/pressure/slot_1"
+                string status = "placeholder_no_digits"
+            }
+        )
+        {
+            rel material:binding = </Panel1/Looks/upper_placeholder>
+            double size = 1
+            float3 xformOp:scale = (0.049, 0.001, 0.022)
+            double3 xformOp:translate = (0.0685, -0.019, 0.047)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "slot_2" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                string slot_id = "panel_1/pressure/slot_2"
+                string status = "placeholder_no_digits"
+            }
+        )
+        {
+            rel material:binding = </Panel1/Looks/lower_placeholder>
+            double size = 1
+            float3 xformOp:scale = (0.049, 0.001, 0.021)
+            double3 xformOp:translate = (0.0685, -0.019, 0.0235)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+
+    def Xform "vacuum" (
+        customData = {
+            string module_id = "vacuum"
+        }
+    )
+    {
+        def Cube "Body" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </Panel1/Looks/body>
+            double size = 1
+            float3 xformOp:scale = (0.067, 0.018, 0.132)
+            double3 xformOp:translate = (0.17550000000000002, -0.009, 0.001)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "slot_1" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                string slot_id = "panel_1/vacuum/slot_1"
+                string status = "placeholder_no_digits"
+            }
+        )
+        {
+            rel material:binding = </Panel1/Looks/upper_placeholder>
+            double size = 1
+            float3 xformOp:scale = (0.043, 0.001, 0.022)
+            double3 xformOp:translate = (0.1795, -0.019, 0.047)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "slot_2" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            customData = {
+                string slot_id = "panel_1/vacuum/slot_2"
+                string status = "placeholder_no_digits"
+            }
+        )
+        {
+            rel material:binding = </Panel1/Looks/lower_placeholder>
+            double size = 1
+            float3 xformOp:scale = (0.043, 0.001, 0.019)
+            double3 xformOp:translate = (0.1795, -0.019, 0.025500000000000002)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Controls" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </Panel1/Looks/controls>
+            double size = 1
+            float3 xformOp:scale = (0.059, 0.001, 0.046)
+            double3 xformOp:translate = (0.1765, -0.019, -0.037)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+}
+

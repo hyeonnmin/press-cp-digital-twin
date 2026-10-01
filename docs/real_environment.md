@@ -4,18 +4,18 @@
 
 분석 상태: Phase 1 완료 — 현재 보유 자료 범위의 분석 종료
 
-다음 Phase: 2 — Base Scene 착수 준비
+현재 Phase: 2 — 전체 정적 CP 가상환경 생성·저장·재열기·렌더 검증 완료
 
-이번 완료는 휴대폰 영상의 관찰 결과, 자료 한계와 구축 방침을 정리했다는 뜻이다. 실제 치수·조명 위치·카메라 설정의 실측 완료나 Base Scene 구현 완료를 뜻하지 않는다.
+Phase 1 완료는 휴대폰 영상의 관찰 결과와 자료 한계를 정리했다는 뜻이다. Phase 2에서는 Panel 1 예비 모델에 이어 전체 7 Panel 환경을 만들었다. 실제 치수·조명·카메라 실측이나 영상 유사성의 정량 검증 완료를 뜻하지 않는다.
 
 ## 1. 개발 실행환경
 
 | 항목 | 값 | 확인 근거 |
 |---|---|---|
 | OS | Windows-11-10.0.26200-SP0 | Phase 0 스크립트 출력 |
-| Isaac Sim | 6.0.1 | 사용자 확인 |
+| Isaac Sim 현재 설치본 | 6.1.0-rc.26+release.49347.2d230af4.gl | 2026-09-30 VERSION·앱 Config·실제 Standalone 실행 직접 확인. 기존 6.0.1은 Phase 0 사용자 보고 이력 |
 | 앱 실행 | `C:\isaacsim\isaac-sim.bat` | 사용자 확인 |
-| 코드 실행 방식 | GUI Script Editor | 사용자 실행 결과 |
+| 기준 코드 실행 방식 | GUI Script Editor | Phase 0 사용자 실행 결과. 이번 Phase 2 직접 검증은 GUI 제어 연결 실패로 Standalone headless 사용 |
 | Isaac Sim 내부 Python | 3.12.13 | Phase 0 스크립트 출력 |
 | GPU | NVIDIA GeForce RTX 4070 SUPER | Phase 0 nvidia-smi 출력 |
 | GPU Driver | 591.86 | Phase 0 nvidia-smi 출력 |
@@ -23,23 +23,23 @@
 
 ### Stage 확인 결과
 
-- 확인 대상: 현재 열린 미저장 익명 Stage.
+- Phase 0 확인 대상: 당시 열린 미저장 익명 Stage.
 - Up-axis: Z.
 - Meters per unit: 1.0.
-- 위 값은 해당 Stage에서 읽은 결과다. 프로젝트 Base Scene은 아직 생성하지 않았다.
+- 위 값은 Phase 0의 해당 Stage에서 읽은 결과다. Phase 2의 `panel_1_preview.usda`와 전체 `press_cp_main.usda`도 저장·재열기 및 별도 프로세스 재열기 후 Z-up·metersPerUnit 1.0을 확인했다.
 
 ### 최소 스크립트 검증
 
 - 스크립트: `isaac_sim/scripts/check_environment.py`.
 - 실행: Script Editor에서 파일을 읽어 실행.
 - 동일 앱 세션에서 2회 `CHECK_OK`, 앱 재시작 후에도 `CHECK_OK` 확인.
-- Stage 생성·수정·저장 기능은 미검증.
+- Phase 0에서는 Stage 생성·수정·저장이 미검증이었다. Phase 2에서는 `scene_setup.py`로 Panel 1 생성·저장·닫기·재열기와 PNG 렌더를 검증했다. GUI Script Editor 직접 실행은 이번에 수행하지 못했다.
 
 ## 2. 진행 상태와 근거 자료
 
 ### 진행 상태
 
-Phase 0 초기 세팅은 이전 완료 기록에 따라 완료로 유지한다. 마지막 확인 Commit은 `af11aaa`이다. 이는 첨부 기록과 사용자 보고에 근거하며, 이번 분석에서 Windows 저장소나 GitHub를 직접 조회한 결과는 아니다.
+Phase 0 초기 세팅은 이전 완료 기록에 따라 완료로 유지한다. Phase 1 종료 당시 마지막 보고 Commit은 `af11aaa`였으며, 이번 Phase 2 착수 때 Windows 저장소를 직접 조회해 HEAD `4faf060`과 변경 없는 작업 트리를 확인했다. GitHub 원격 동기화는 이번에 검증하지 않았다.
 
 2026-09-30 사용자는 정확한 CP 설계도·조명 위치·카메라 설정이 없고 휴대폰 영상 하나만 보유하고 있으며, 이를 고려해 Phase 1을 마무리하도록 지시했다. 이에 현재 자료로 확인할 수 있는 구조·시각 특성을 기록하고, 미확인 항목과 다음 Phase의 조정 방식을 명시하는 것으로 Phase 1 종료 기준을 적용한다.
 
@@ -213,12 +213,30 @@ HMI, 버튼, 라벨, 커버는 주변 Geometry·Material 후보로 기록한다.
 
 위 항목은 완료하지 않았으며 담당 Phase에서 진행한다.
 
-## 7. 다음 작업 하나
+## 7. Phase 2 첫 작업 이력 — Panel 1
 
-**Phase 2의 첫 작업은 Panel 1의 온도·압력·진공 Module 배치를 단순 Geometry로 구성하고 USD로 저장하는 것이다.**
+**Panel 1의 세 Module·여섯 주요 표시 영역을 단순 Geometry로 구성하고 USD 저장·재열기를 검증했다.**
 
-기존 저장소의 AGENTS.md·폴더·Config를 먼저 확인한다. Isaac Sim 6.0.1, GUI Script Editor 실행 방식을 유지하며, 제어반 바탕과 Panel 1의 세 Module 및 각 두 표시 영역을 만든다. 숫자 변경 자동화와 전체 7 Panel 확대는 후속 작업으로 분리한다.
+2026-09-30 사용자가 지정한 `C:\Users\rlaek\Downloads\IMG_2631.MOV`를 직접 읽었다. FFmpeg로 1920×1080, 약 20.54초를 재확인하고 2·4·10·18초 프레임을 추출했다. 4·18초 프레임을 직접 보았으며, 4초의 수동 근사 bbox를 Config에 기록했다. 영상·원본 프레임은 수정하지 않았다.
 
-완료 기준: 저장된 USD를 다시 열었을 때 Z-up·metersPerUnit 1.0이 유지되고, Panel 1의 세 Module과 여섯 주요 표시 영역이 영상에서 관찰한 좌우·위아래 관계대로 존재한다. 사용한 크기가 실측값인지 임시값인지 기록한다. 이 첫 완료 기준은 Geometry 생성·저장을 확인하기 위한 것이며, 최종 Base Scene의 영상 유사성 검증은 별도로 수행한다.
+모델링 배율은 0.001 m/px 임시값이며 원근 보정이나 실측에 근거한 치수가 아니다. 모듈 폭×높이는 온도 0.143×0.134 m, 압력 0.140×0.134 m, 진공 0.067×0.132 m이다. 모든 깊이와 검토용 Camera·Light·Material도 임시 설정으로 구분했다. 숫자열의 값·문자 형상은 아직 구현하지 않았다.
 
-이 문서 갱신이 Windows 저장소·Notion·다른 프로젝트 소스에 자동 반영된 것은 아니다.
+실제 설치본은 기존 문서와 다른 6.1.0 RC였으며 설치를 변경하지 않았다. GUI 제어 도구 연결 실패로 같은 Python 생성·검증 함수를 Standalone headless에서 실행했다. 디스크 재열기, 앱 저장·닫기·재열기, 새 앱 프로세스 재열기에서 Z-up·metersPerUnit 1.0과 Module 3개·Slot 6개의 배치 검사가 통과했다. 1200×600 검토 렌더도 확인했다. 이 크기는 실영상/OCR 입력 해상도가 아니다.
+
+파일과 재현 방법: [phase2_panel_1.md](phase2_panel_1.md). 상세 보고서와 렌더는 `outputs/phase2_validation/`에 있다. 실행 검증이 끝난 첫 Geometry 결과와 최종 Base Scene의 영상 유사성 검증은 구분한다.
+
+당시 다음 계획은 Panel 1의 투시 Camera 비교였다. 이후 사용자의 전체 환경 제작 요청에 따라 8절의 범위로 확대했다. Panel 1 시험 파일의 직교 Camera는 초기 배치 검토용으로 유지한다.
+
+이번 문서는 현재 Windows 저장소에 직접 갱신했다. Commit·Push, Notion·다른 프로젝트 소스 동기화는 수행하지 않았다.
+
+## 8. 최신 Phase 2 결과 — 전체 정적 가상환경
+
+`isaac_sim/stages/press_cp_main.usda`에 두 문·7 Panel·21 Module·42 Slot, 발광 세그먼트 숫자, HMI·조작부·명판·손잡이·초록 커버·주변 배관·바닥·벽을 구성했다. 원본 4초 프레임의 배치를 가상 투시 Camera로 근사했으며, 기준·전체 사선·근접 Camera를 각각 제공한다.
+
+실제 치수는 계속 미확인이다. 폭 1.77 m·높이 1.50 m·깊이 0.30 m와 가상 초점거리 1800 px는 이번 전체 환경의 임시값이다. 7절의 0.001 m/px 배율은 초기 Panel 1 시험에만 해당한다. HMI·안전 안내문과 가려진 부분은 모식 표현이며 초기 숫자는 검증된 OCR 정답이 아니다.
+
+2026-09-30 14:31 KST, 설치된 Isaac Sim 6.1.0 RC에서 생성·저장·닫기·재열기와 별도 프로세스 재열기가 모두 통과했다. 7/21/42 개수·고유 ID·배치·표시 문자열·텍스처 상대 참조·Z-up·metersPerUnit 1.0을 검사하고 1920×1080 렌더를 기록했다. 이번 직접 실행 방식은 Standalone headless이며 GUI Script Editor 조작 검증과 구분한다.
+
+중간에 Viewport 준비 시간 초과 후 Fabric native crash가 1회 있었다. 실제 프레임 준비를 기다리도록 보완한 뒤 생성·재열기 두 실행이 통과했으며 근본 원인은 확정하지 않았다. 최종 보고서는 `outputs/full_scene/build_report.json`, `reopen_report.json`, 실행법과 한계는 [phase2_full_scene.md](phase2_full_scene.md)에 있다.
+
+다음 작업은 주요 Slot의 실영상·렌더 Crop 비교다. 반사·노이즈·표시 갱신 효과, 동적 문자열, 학습용 데이터 생성과 최종 평가까지 완료한 것은 아니다.

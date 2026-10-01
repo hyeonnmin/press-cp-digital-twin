@@ -1,5 +1,16 @@
 \# Press CP Digital Twin
 
+## 현재 전체 CP Scene
+
+Isaac Sim에서 `isaac_sim/stages/press_cp_main.usda`를 연다. 영상의 좌우 제어반, 7 Panel·21 Module·42개 숫자 표시줄, HMI·버튼·주변 배관을 포함한다.
+
+- [전체 환경 열기·실행법](docs/phase2_full_scene.md)
+- [최신 진행 상황](docs/progress.md)
+- 설정: `config/press_cp_scene.json`
+- 카메라: `/World/Cameras/reference`, `/World/Cameras/overview`, `/World/Cameras/detail`
+
+현재 설치본 6.1.0 RC에서 검증했다. 아래 6.0.1 실행 기록은 초기 사용자 확인 이력이다.
+
 
 
 실제 프레스 CP 환경을 NVIDIA Isaac Sim에서 재현하고,
