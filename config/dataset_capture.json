@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "sequence": {
+    "minimum": "0.0",
+    "maximum": "999.0",
+    "start": "0.0",
+    "step": "0.1",
+    "decimal_places": 1,
+    "wrap": true,
+    "slot_mode": "synchronized"
+  },
+  "seed": null,
+  "capture": {
+    "use_fabric_scene_delegate": true,
+    "stage_reload_per_frame": true,
+    "verification_indices": [0, 1, 99, 100, 888, 9990, 9991]
+  },
+  "status": "범위와 순차 변화는 사용자 지정. 0.1 증가, 끝에서 순환, 모든 Slot 동기화는 초기 가정. 실측 범위 또는 최종 학습 조건이 아님."
+}

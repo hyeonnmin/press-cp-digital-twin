@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "class_mode": "single",
+  "bbox_source": "bbox",
+  "panel_padding_px": 4,
+  "split_seed": 42,
+  "validation_fraction": 0.2,
+  "status": "표시기 3개를 Panel 한 장으로 자르고 주요 숫자 문자열 6개를 검출한다. bbox는 기존 숫자 Crop 여백 포함 영역. 기본 slot 단일 클래스, six_slots로 변경 가능. Synthetic 검증용 80/20 분할이며 Real Test가 아님."
+}

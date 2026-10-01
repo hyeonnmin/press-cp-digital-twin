@@ -1,10 +1,12 @@
 # 실행환경과 실제 CP 환경 분석
 
-최종 갱신: 2026-09-30 (Asia/Seoul)
+최종 갱신: 2026-10-01 (Asia/Seoul)
 
 분석 상태: Phase 1 완료 — 현재 보유 자료 범위의 분석 종료
 
 현재 Phase: 2 — 전체 정적 CP 가상환경 생성·저장·재열기·렌더 검증 완료
+
+2026-10-01 추가 확인: 사용자가 Train/Test 구간은 아직 정하지 않았다고 밝혔다. 4초 프레임의 42 Slot Crop 비교와 LED Emission·Bloom 수정을 수행했다. 최종 실험 분할과 유사성 합격은 미완료이며 상세 결과는 [phase2_full_scene.md](phase2_full_scene.md)에 기록한다.
 
 Phase 1 완료는 휴대폰 영상의 관찰 결과와 자료 한계를 정리했다는 뜻이다. Phase 2에서는 Panel 1 예비 모델에 이어 전체 7 Panel 환경을 만들었다. 실제 치수·조명·카메라 실측이나 영상 유사성의 정량 검증 완료를 뜻하지 않는다.
 
@@ -26,14 +28,14 @@ Phase 1 완료는 휴대폰 영상의 관찰 결과와 자료 한계를 정리�
 - Phase 0 확인 대상: 당시 열린 미저장 익명 Stage.
 - Up-axis: Z.
 - Meters per unit: 1.0.
-- 위 값은 Phase 0의 해당 Stage에서 읽은 결과다. Phase 2의 `panel_1_preview.usda`와 전체 `press_cp_main.usda`도 저장·재열기 및 별도 프로세스 재열기 후 Z-up·metersPerUnit 1.0을 확인했다.
+- 위 값은 Phase 0의 해당 Stage에서 읽은 결과다. Phase 2의 전체 `press_cp_main.usda`도 저장·재열기 및 별도 프로세스 재열기 후 Z-up·metersPerUnit 1.0을 확인했다.
 
 ### 최소 스크립트 검증
 
 - 스크립트: `isaac_sim/scripts/check_environment.py`.
 - 실행: Script Editor에서 파일을 읽어 실행.
 - 동일 앱 세션에서 2회 `CHECK_OK`, 앱 재시작 후에도 `CHECK_OK` 확인.
-- Phase 0에서는 Stage 생성·수정·저장이 미검증이었다. Phase 2에서는 `scene_setup.py`로 Panel 1 생성·저장·닫기·재열기와 PNG 렌더를 검증했다. GUI Script Editor 직접 실행은 이번에 수행하지 못했다.
+- Phase 0에서는 Stage 생성·수정·저장이 미검증이었다. Phase 2에서는 `full_scene_setup.py`로 전체 환경 생성·저장·닫기·재열기와 PNG 렌더를 검증했다. GUI Script Editor 직접 실행은 이번에 수행하지 못했다.
 
 ## 2. 진행 상태와 근거 자료
 
@@ -223,9 +225,7 @@ HMI, 버튼, 라벨, 커버는 주변 Geometry·Material 후보로 기록한다.
 
 실제 설치본은 기존 문서와 다른 6.1.0 RC였으며 설치를 변경하지 않았다. GUI 제어 도구 연결 실패로 같은 Python 생성·검증 함수를 Standalone headless에서 실행했다. 디스크 재열기, 앱 저장·닫기·재열기, 새 앱 프로세스 재열기에서 Z-up·metersPerUnit 1.0과 Module 3개·Slot 6개의 배치 검사가 통과했다. 1200×600 검토 렌더도 확인했다. 이 크기는 실영상/OCR 입력 해상도가 아니다.
 
-파일과 재현 방법: [phase2_panel_1.md](phase2_panel_1.md). 상세 보고서와 렌더는 `outputs/phase2_validation/`에 있다. 실행 검증이 끝난 첫 Geometry 결과와 최종 Base Scene의 영상 유사성 검증은 구분한다.
-
-당시 다음 계획은 Panel 1의 투시 Camera 비교였다. 이후 사용자의 전체 환경 제작 요청에 따라 8절의 범위로 확대했다. Panel 1 시험 파일의 직교 Camera는 초기 배치 검토용으로 유지한다.
+이후 사용자의 전체 환경 제작 요청에 따라 8절의 범위로 확대했다. 2026-10-01 단일 Panel 시험 파일·설명 문서·검증 산출물은 사용자 요청으로 삭제했다. 위 내용은 초기 검증 이력이며 현재 실행 대상은 전체 환경이다. 실행법은 [phase2_full_scene.md](phase2_full_scene.md)를 사용한다.
 
 이번 문서는 현재 Windows 저장소에 직접 갱신했다. Commit·Push, Notion·다른 프로젝트 소스 동기화는 수행하지 않았다.
 
@@ -239,4 +239,4 @@ HMI, 버튼, 라벨, 커버는 주변 Geometry·Material 후보로 기록한다.
 
 중간에 Viewport 준비 시간 초과 후 Fabric native crash가 1회 있었다. 실제 프레임 준비를 기다리도록 보완한 뒤 생성·재열기 두 실행이 통과했으며 근본 원인은 확정하지 않았다. 최종 보고서는 `outputs/full_scene/build_report.json`, `reopen_report.json`, 실행법과 한계는 [phase2_full_scene.md](phase2_full_scene.md)에 있다.
 
-다음 작업은 주요 Slot의 실영상·렌더 Crop 비교다. 반사·노이즈·표시 갱신 효과, 동적 문자열, 학습용 데이터 생성과 최종 평가까지 완료한 것은 아니다.
+2026-10-01 주요 42 Slot의 실영상·렌더 Crop 예비 비교와 LED 발광 수정을 수행했다. 다음 작업은 숫자 위치·폭·기울기 보정이다. 반사·노이즈·표시 갱신 효과, 동적 문자열, 학습용 데이터 생성과 최종 평가까지 완료한 것은 아니다.

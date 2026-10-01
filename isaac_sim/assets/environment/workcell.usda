@@ -1,8 +1,8 @@
 #usda 1.0
 (
     customLayerData = {
-        string code_sha256 = "f8c81c2a50e7c38ea3947a954f3b9e903254f8cb0b87e97a4dcdf77ddf0f3977"
-        string config_sha256 = "79e57d92ec73d73b07511d3f9502adaf69f5012dbd315a7d5ec38ec09075bfe8"
+        string code_sha256 = "1bcd2200d20b165f24b0b0a8d669a05f16207943cbb29f85ef7a21ba76764cfe"
+        string config_sha256 = "f15efbe9bc6d061d30c241b7fdac99b21cda6fbba4cfc9644eefb159a752964e"
         string dataset_status = "not_training_data"
         string dimension_status = "provisional_not_measured"
         string generator = "press-cp/full-environment/v1"
@@ -151,8 +151,8 @@ def Xform "Workcell"
             def Shader "Surface"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.14, 0.32, 0.005)
-                color3f inputs:emissiveColor = (1.6, 2.4, 0.02)
+                color3f inputs:diffuseColor = (0, 0, 0)
+                color3f inputs:emissiveColor = (0.4485, 1.15, 0.06555)
                 float inputs:metallic = 0
                 float inputs:roughness = 0.4
                 token outputs:surface
@@ -166,8 +166,8 @@ def Xform "Workcell"
             def Shader "Surface"
             {
                 uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.38, 0.14, 0.006)
-                color3f inputs:emissiveColor = (1.4, 0.65, 0.015)
+                color3f inputs:diffuseColor = (0, 0, 0)
+                color3f inputs:emissiveColor = (0.5, 0.24, 0.065)
                 float inputs:metallic = 0
                 float inputs:roughness = 0.4
                 token outputs:surface

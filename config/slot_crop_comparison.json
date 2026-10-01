@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "status": "4초 프레임의 수동 Module bbox와 Crop 시각 확인에 따른 고정 검색창. 숫자 정답 bbox가 아니며 Scene의 투영값으로 정렬하지 않음. Train/Test 구간 미정(2026-10-01 사용자 확인). 예비 외형 비교 전용.",
+  "reference_image": "outputs/phase2_reference/frame_04s.png",
+  "reference_sha256": "7cbe252eef4a4baf4008f98c8c2607223605c08a4156ee628f0cceff50731162",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "slots": [
+    {
+      "id": "panel_1/temperature/slot_1",
+      "bbox": [
+        354,
+        131,
+        436,
+        160
+      ]
+    },
+    {
+      "id": "panel_1/temperature/slot_2",
+      "bbox": [
+        354,
+        160,
+        436,
+        188
+      ]
+    },
+    {
+      "id": "panel_1/pressure/slot_1",
+      "bbox": [
+        532,
+        130,
+        605,
+        158
+      ]
+    },
+    {
+      "id": "panel_1/pressure/slot_2",
+      "bbox": [
+        532,
+        158,
+        605,
+        187
+      ]
+    },
+    {
+      "id": "panel_1/vacuum/slot_1",
+      "bbox": [
+        645,
+        129,
+        712,
+        155
+      ]
+    },
+    {
+      "id": "panel_1/vacuum/slot_2",
+      "bbox": [
+        645,
+        149,
+        712,
+        182
+      ]
+    },
+    {
+      "id": "panel_2/temperature/slot_1",
+      "bbox": [
+        378,
+        347,
+        457,
+        374
+      ]
+    },
+    {
+      "id": "panel_2/temperature/slot_2",
+      "bbox": [
+        378,
+        374,
+        457,
+        400
+      ]
+    },
+    {
+      "id": "panel_2/pressure/slot_1",
+      "bbox": [
+        548,
+        345,
+        618,
+        372
+      ]
+    },
+    {
+      "id": "panel_2/pressure/slot_2",
+      "bbox": [
+        548,
+        372,
+        618,
+        394
+      ]
+    },
+    {
+      "id": "panel_2/vacuum/slot_1",
+      "bbox": [
+        656,
+        346,
+        724,
+        371
+      ]
+    },
+    {
+      "id": "panel_2/vacuum/slot_2",
+      "bbox": [
+        656,
+        365,
+        724,
+        397
+      ]
+    },
+    {
+      "id": "panel_3/temperature/slot_1",
+      "bbox": [
+        401,
+        549,
+        477,
+        574
+      ]
+    },
+    {
+      "id": "panel_3/temperature/slot_2",
+      "bbox": [
+        401,
+        574,
+        477,
+        599
+      ]
+    },
+    {
+      "id": "panel_3/pressure/slot_1",
+      "bbox": [
+        564,
+        547,
+        632,
+        572
+      ]
+    },
+    {
+      "id": "panel_3/pressure/slot_2",
+      "bbox": [
+        564,
+        572,
+        632,
+        596
+      ]
+    },
+    {
+      "id": "panel_3/vacuum/slot_1",
+      "bbox": [
+        670,
+        547,
+        734,
+        571
+      ]
+    },
+    {
+      "id": "panel_3/vacuum/slot_2",
+      "bbox": [
+        670,
+        565,
+        734,
+        594
+      ]
+    },
+    {
+      "id": "panel_4/temperature/slot_1",
+      "bbox": [
+        420,
+        737,
+        492,
+        761
+      ]
+    },
+    {
+      "id": "panel_4/temperature/slot_2",
+      "bbox": [
+        420,
+        761,
+        492,
+        785
+      ]
+    },
+    {
+      "id": "panel_4/pressure/slot_1",
+      "bbox": [
+        580,
+        734,
+        643,
+        758
+      ]
+    },
+    {
+      "id": "panel_4/pressure/slot_2",
+      "bbox": [
+        580,
+        758,
+        643,
+        782
+      ]
+    },
+    {
+      "id": "panel_4/vacuum/slot_1",
+      "bbox": [
+        683,
+        733,
+        743,
+        756
+      ]
+    },
+    {
+      "id": "panel_4/vacuum/slot_2",
+      "bbox": [
+        683,
+        750,
+        743,
+        780
+      ]
+    },
+    {
+      "id": "panel_5/temperature/slot_1",
+      "bbox": [
+        441,
+        911,
+        511,
+        938
+      ]
+    },
+    {
+      "id": "panel_5/temperature/slot_2",
+      "bbox": [
+        441,
+        932,
+        511,
+        963
+      ]
+    },
+    {
+      "id": "panel_5/pressure/slot_1",
+      "bbox": [
+        596,
+        909,
+        658,
+        936
+      ]
+    },
+    {
+      "id": "panel_5/pressure/slot_2",
+      "bbox": [
+        596,
+        929,
+        658,
+        960
+      ]
+    },
+    {
+      "id": "panel_5/vacuum/slot_1",
+      "bbox": [
+        694,
+        907,
+        753,
+        932
+      ]
+    },
+    {
+      "id": "panel_5/vacuum/slot_2",
+      "bbox": [
+        694,
+        926,
+        753,
+        957
+      ]
+    },
+    {
+      "id": "panel_6/temperature/slot_1",
+      "bbox": [
+        1162,
+        541,
+        1224,
+        566
+      ]
+    },
+    {
+      "id": "panel_6/temperature/slot_2",
+      "bbox": [
+        1162,
+        566,
+        1224,
+        584
+      ]
+    },
+    {
+      "id": "panel_6/pressure/slot_1",
+      "bbox": [
+        1322,
+        540,
+        1388,
+        565
+      ]
+    },
+    {
+      "id": "panel_6/pressure/slot_2",
+      "bbox": [
+        1322,
+        565,
+        1388,
+        582
+      ]
+    },
+    {
+      "id": "panel_6/vacuum/slot_1",
+      "bbox": [
+        1423,
+        535,
+        1485,
+        563
+      ]
+    },
+    {
+      "id": "panel_6/vacuum/slot_2",
+      "bbox": [
+        1423,
+        557,
+        1485,
+        588
+      ]
+    },
+    {
+      "id": "panel_7/temperature/slot_1",
+      "bbox": [
+        1156,
+        729,
+        1216,
+        752
+      ]
+    },
+    {
+      "id": "panel_7/temperature/slot_2",
+      "bbox": [
+        1156,
+        752,
+        1216,
+        776
+      ]
+    },
+    {
+      "id": "panel_7/pressure/slot_1",
+      "bbox": [
+        1308,
+        731,
+        1368,
+        753
+      ]
+    },
+    {
+      "id": "panel_7/pressure/slot_2",
+      "bbox": [
+        1308,
+        753,
+        1368,
+        775
+      ]
+    },
+    {
+      "id": "panel_7/vacuum/slot_1",
+      "bbox": [
+        1411,
+        723,
+        1477,
+        751
+      ]
+    },
+    {
+      "id": "panel_7/vacuum/slot_2",
+      "bbox": [
+        1411,
+        745,
+        1477,
+        776
+      ]
+    }
+  ]
+}

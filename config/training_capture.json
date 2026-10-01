@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "seed": 42,
+  "frame_count": 10,
+  "split": "unassigned",
+  "sampling": {
+    "mode": "balanced_digit_length",
+    "minimum": "0.0",
+    "maximum": "999.0",
+    "decimal_places": 1,
+    "status": "각 프레임에서 정수부 1·2·3자리 각 14개를 무작위 Slot에 배정. 실제 장비 값 분포가 아닌 초기 학습 균형 조건."
+  },
+  "camera": {
+    "path": "/World/Cameras/training",
+    "projection": "orthographic",
+    "fit_prim": "/World/Cabinet/Panels",
+    "resolution": [3840, 2160],
+    "margin_fraction": 0.05,
+    "distance_m": 3.0,
+    "status": "Panel 전체 경계의 정면 중앙, Z-up, 왜곡 없는 직교 투영. 실측 카메라 복원이 아닌 학습용 기준 시점."
+  },
+  "render": {
+    "initial_subframes": 32,
+    "check_subframes": 8,
+    "max_subframes": 160,
+    "stable_checks": 2,
+    "max_roi_mean_difference": 3.0,
+    "settings": {
+      "/rtx/rendermode": "RealTimePathTracing",
+      "/rtx/post/aa/op": 3,
+      "/rtx/post/dlss/execMode": 2,
+      "/rtx/post/motionblur/enabled": false
+    },
+    "status": "0~255 RGB에서 모든 Slot의 연속 렌더 평균 차이를 검사하는 예비 안정화 기준. 고정 숫자에서 160 subframe까지 2~2.5 차이가 남아 허용치를 3으로 설정. 별도 잔상 검사도 유지하며 최종 OCR 품질 합격 기준은 아님."
+  },
+  "crop": {"padding_px": 4, "minimum_digit_height_px": 18},
+  "verification": {"probe_values": ["0.0", "999.0", "0.0"], "maximum_repeat_ratio": 0.25}
+}

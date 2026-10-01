@@ -15,6 +15,7 @@ Viewport의 Camera 목록에서 다음 Camera를 선택한다.
 | Camera 경로 | 용도 |
 |---|---|
 | `/World/Cameras/reference` | 원본 4초 프레임과 비교하는 투시 구도 |
+| `/World/Cameras/training` | 전체 Panel을 정면 중앙에서 보는 직교 시점. 학습 생성 기본 카메라, [별도 실행 안내](training_capture.md) |
 | `/World/Cameras/overview` | 제어반 두께와 좌우 주변 구조를 보는 사선 전체 구도 |
 | `/World/Cameras/detail` | Panel 1 숫자·모듈 근접 확인 |
 
@@ -61,7 +62,7 @@ isaac_sim/scripts/full_scene_setup.py          # 저장·재열기·렌더·보�
 isaac_sim/scripts/verify_full_scene.py          # Standalone 검증 진입점
 ```
 
-Scene → 제어반·주변 Asset → PNG의 경로는 모두 상대 참조다. Scene만 따로 복사하지 말고 `isaac_sim/stages`와 `isaac_sim/assets`의 상대 구조를 함께 유지한다. 기존 Panel 1 검증 파일은 그대로 남겨 두었다.
+Scene → 제어반·주변 Asset → PNG의 경로는 모두 상대 참조다. Scene만 따로 복사하지 말고 `isaac_sim/stages`와 `isaac_sim/assets`의 상대 구조를 함께 유지한다. 2026-10-01 단일 Panel 시험 파일을 정리했으며, 현재 실행 경로는 이 전체 환경으로 통일했다.
 
 작은 USD·명판 텍스처는 모델의 소스 Asset으로 Git 관리할 수 있다. 원본 영상, 참조 프레임, 검증 렌더·상세 보고서·캐시는 `outputs/` 아래에 두며 일반 Git에서 제외한다.
 
@@ -104,7 +105,43 @@ cp_task = asyncio.ensure_future(full_scene_setup.run())
 
 카메라의 `module_anchor_projection_max_error_px`는 입력 배치점과 USD 투영 규약의 일관성 검사다. 같은 배치점을 사용하므로 독립 영상 유사도나 카메라 보정 정확도로 해석하지 않는다. 실영상 외장 네 영역의 평균 RGB도 살펴 임시 광원을 조정했으나, 한 프레임의 일부 영역 비교이므로 전체 조명·반사 재현을 보증하지 않는다.
 
-이 결과는 **전체 정적 가상환경 구축**이다. 실영상과의 정량 유사성 합격 기준, 반사·노이즈·흔들림·LED 갱신 특성, 동적 문자열 변경, 학습용 데이터 생성·평가 검증은 남아 있다. 기존 Train/Test 구간 미확인 상태이므로 현재 설정을 최종 학습·평가용 보정값으로 고정하지 않는다.
+이 결과는 **전체 정적 가상환경 구축**이다. 실영상과의 정량 유사성 합격 기준, 반사·노이즈·흔들림·LED 갱신 특성, 동적 문자열 변경, 학습용 데이터 생성·평가 검증은 남아 있다. 2026-10-01 사용자가 Train/Test 구간은 아직 정하지 않았다고 확인했다. 현재 설정을 최종 학습·평가용 보정값으로 고정하지 않는다.
+
+## 2026-10-01 — 42 Slot Crop 비교와 LED 발광
+
+실영상 4초 프레임, 수정 전 렌더, LED 수정 후 렌더를 같은 1920×1080 좌표로 비교했다. `config/slot_crop_comparison.json`은 Module 수동 bbox와 Crop 시각 확인으로 정한 고정 검색창 42개를 저장한다. 정답 숫자 bbox가 아니며 USD의 투영 결과로 실영상을 정렬하지 않는다. 원본 Crop은 크기·색을 변환하지 않으며 비교표만 최근접 보간으로 4배 확대한다.
+
+결과물은 `outputs/led_comparison/comparison/`의 `panel_1.png`~`panel_7.png`, `crops/`의 원본 크기 Crop 126개, `comparison.json`이다. JSON에는 고유 Slot ID·ROI·입력/출력 Hash와 변경 전후 렌더 보고서의 조건을 저장한다. 이전 렌더·보고서는 `outputs/led_comparison/before_*`로 보존했다. 모두 Git 제외 산출물이다.
+
+측정은 검색창의 녹색/주황색 마스크에서 밝기 상위 40% 픽셀을 사용한다. 아래 값은 각 표시줄 21개 Slot에서 얻은 RGB 중앙값의 중앙값이다. 센서 노출과 배경 반사, 글자 형태에 영향을 받는 8-bit 이미지 지표이며 LED의 물리 휘도 측정값이 아니다.
+
+| 표시줄 | 실영상 | 변경 전 DT | LED 수정 후 DT |
+|---|---|---|---|
+| 위쪽 녹색 | (183, 223, 49) | (239, 246, 28) | (193.5, 231, 75) |
+| 아래쪽 주황색 | (195, 154, 85) | (237, 212, 26) | (195, 152, 71.5) |
+
+기존 DT의 지나치게 밝고 노란 색 차이가 줄었다. 반면 색 마스크 중심 거리 중앙값은 수정 후 위쪽 8.19 px, 아래쪽 7.87 px로 남았다. 실제 숫자는 더 넓거나 기울어져 보이고 모듈별 밝기가 다르다. 특히 진공 표시의 아래 숫자는 일부 실영상에서 현재 DT보다 밝다. 반사와 흐림까지 일치했다고 판단하지 않는다. 위치/형상은 이번에 수정하지 않았으며 중심값의 작은 변동은 색 마스크 변화에도 영향을 받는다.
+
+숫자 Mesh는 `UsdPreviewSurface`의 `emissiveColor`로 **자체 발광**한다. `materials.green_led`와 `amber_led`의 `emission_color × emission_intensity`가 발광 입력이며, `rendering.settings`의 FFT Bloom은 렌더러 내부에서 광학 번짐을 만든다. 저장된 PNG에 Glow를 나중에 합성한 결과가 아니다. 발광 색·세기와 Bloom 수치는 영상 관찰에 따른 예비값이며 측정된 LED 광도나 렌즈 설정이 아니다. 별도 점광원은 추가하지 않았다.
+
+Scene의 `customLayerData.renderSettings`에 설정을 기록해 직접 열기에도 사용한다. Kit 저장이 기본값을 생략하는 것을 확인해 저장 후 명시값을 다시 기록하고, 재열기 후 USD와 런타임 적용값을 검사한다. Bloom은 숫자뿐 아니라 HMI 등 화면의 다른 밝은 부분에도 영향을 주므로 Config와 적용값을 함께 기록한다.
+
+```powershell
+# 전체 환경 재생성 및 LED 발광 대조 렌더
+& C:\isaacsim\python.bat isaac_sim/scripts/verify_full_scene.py --led-checks
+# 새 프로세스에서 저장 결과와 LED 검증
+& C:\isaacsim\python.bat isaac_sim/scripts/verify_full_scene.py --reopen-only --led-checks
+# 실영상 / 보존된 변경 전 렌더 / 수정 후 렌더 비교
+& C:\isaacsim\python.bat isaac_sim/scripts/compare_slot_crops.py --after outputs/full_scene/reference.png --before-report outputs/led_comparison/before_build_report.json --after-report outputs/full_scene/build_report.json
+```
+
+변경 전 산출물이 없는 새 Checkout에서는 비교할 렌더와 보고서를 `--before`, `--before-report`로 지정한다. 실영상 프레임도 로컬 파일이 필요하며 Config의 SHA-256을 확인한다. 생성·재열기 보고서에 코드·Config·Asset·렌더 Hash와 적용 설정, Seed null을 남긴다.
+
+`--led-checks`는 같은 Scene에서 Bloom 끔, 환경 조명 0에서 LED 발광 켬, 동일 조건에서 발광 끔을 순서대로 캡처한다. 결과는 `outputs/full_scene/led_checks/build/` 또는 `reopen/`의 `led_bloom_off.png`, `led_dark_on.png`, `led_dark_off.png`다. 생성·재열기 산출물을 분리해 이전 보고서의 Hash 연결을 유지한다. 숫자가 켜진 픽셀의 동일 좌표끼리 밝기를 비교해 42개 Slot의 자체 발광을 검사하며, 진단 변경은 복구하고 디스크 Scene에 저장하지 않는다. 이는 발광 구현 검증이며 실제 주변 물체를 비추는 조도·광량의 정확성을 보증하지 않는다.
+
+일부 검색창은 실영상과 DT의 위치 차이 때문에 이웃 표시줄의 가장자리를 포함한다. 측정에는 표시줄별 색 조건을 동일 적용한다. 원본 문자열의 전사 검증, OCR 정답 정확도, 글자별 SSIM 점수는 산출하지 않는다. Train/Validation/Test를 나누기 전에 사용한 4초 프레임과 인접 구간을 보정 이력으로 관리하고 최종 Test 재사용을 피한다.
+
+최종 생성·별도 프로세스 재열기는 모두 `FULL_SCENE_OK`, 종료 코드 0이었다. 보고서의 코드·Asset·렌더 Hash와 현재 파일이 일치하고 Crop 126개도 ID 연결·디코딩·Hash 검사를 통과했다. 발광 픽셀의 중앙값 밝기 차이는 생성 시 최소 155, 재열기 시 최소 160이었다. 최종 색 마스크가 검색창 경계에 닿은 사례는 없었다. Kit의 `restoreMetadataSettings` 경고는 남았으나 저장된 설정과 명시적으로 적용한 런타임 값 검사는 통과했다. GUI에서 파일만 직접 열었을 때의 설정 복원은 이번 Standalone 검증과 구분한다.
 
 ## 사용한 공식 API 근거
 
@@ -114,5 +151,8 @@ cp_task = asyncio.ensure_future(full_scene_setup.run())
 - [Viewport 캡처](https://docs.omniverse.nvidia.com/kit/docs/omni.kit.viewport.utility/latest/omni.kit.viewport.utility/omni.kit.viewport.utility.capture_viewport_to_file.html)
 - [Viewport 표시 동작](https://docs.omniverse.nvidia.com/kit/docs/omni.kit.viewport.actions/latest/actions_api.html)
 - [Viewport 프레임 준비 대기](https://docs.omniverse.nvidia.com/kit/docs/omni.kit.viewport.docs/109.0.0/viewport_api.html)
+- [OpenUSD 발광 재질 입력](https://openusd.org/release/spec_usdpreviewsurface.html)
+- [RTX FFT Bloom 설정](https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx_post-processing.html#fft-bloom)
+- [USD에 렌더 설정 저장 예시](https://docs.omniverse.nvidia.com/workflows/latest/rtx_rt-dh-setup.html)
 
-설치된 확장 코드의 API 정의와 실제 실행 결과를 함께 확인했다.
+설치된 확장 코드의 API 정의와 실제 실행 결과를 함께 확인했다. Bloom의 정확한 설정 키는 현재 설치본 `omni.rtx.settings.core-0.7.1+00c488ae/omni/rtx/settings/core/widgets/post_widgets.py`와 대조했다.

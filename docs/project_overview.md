@@ -2,11 +2,13 @@
 
 작성일: 2026-09-30 (Asia/Seoul)
 
+현재 구현 상태 갱신: 2026-10-01 (Asia/Seoul).
+
 기준 자료: [프레스 CP AI 모니터링 시스템 Digital Twin — Notion](https://app.notion.com/p/CP-AI-Digital-Twin-3e944825e9c680f9a9ace42c09e042ef)
 
 확인한 원본의 마지막 수정 시각: 2026-09-28 07:18:46 UTC.
 
-이 문서는 Notion의 현재 목표·범위·Phase 0~6 로드맵을 재구성한 프로젝트 공통 자료이다. 데이터 누수 방지, 실험 조건 통제, 문서 운영 규칙은 실행을 위한 권장 사항으로 추가했다. 저장소와 실제 실행 환경은 이번 문서 작성 과정에서 검증하지 않았다.
+이 문서는 Notion의 목표·범위·Phase 0~6 로드맵과 저장소의 구현 현황을 정리한 프로젝트 공통 자료이다. 초기 계획과 이후 확인한 실행 결과를 구분하며, 상세 검증 근거와 남은 작업은 [진행 상황](progress.md)에 기록한다.
 
 ## 1. 목표와 연구 질문
 
@@ -33,6 +35,8 @@
 
 Detection이나 Crop 추출은 Recognition 실험에 필요한 입력 처리로 다룬다. 기존 Detector를 사용할지, 정해진 ROI 또는 가상환경의 위치 정보를 사용할지는 Dataset 설계에서 결정한다. 추후 범위 변경은 이유와 영향을 기록한다.
 
+2026-10-01 사용자 요청으로 **YOLO Detection 학습용 Panel 이미지와 Slot bbox 데이터 생성**을 추가했다. Panel당 표시기 3개·주요 숫자 Slot 6개이며 클래스는 사용자 확인에 따라 단일 `slot`이다. 이번 추가 범위는 데이터 생성·검증이고 Detection 모델 학습은 별도 작업이다.
+
 ## 3. 비교 실험
 
 | 실험 | 학습 데이터 | 평가 데이터 | 목적 |
@@ -53,7 +57,7 @@ Detection이나 Crop 추출은 Recognition 실험에 필요한 입력 처리로 
 
 주요 기술: NVIDIA Isaac Sim, Python, USD, Git/GitHub, OCR Recognition 학습 프레임워크. 필요에 따라 OpenCV 및 PyTorch/PaddleOCR을 사용한다.
 
-기존 대화에서 Windows Standalone / Isaac Sim 6.0.1 사용 이력이 있으나, 이번 프로젝트의 실제 버전과 실행 방식은 확인해야 한다. API를 선택하기 전에 `docs/real_environment.md` 또는 `docs/architecture.md`에 아래 항목을 기록한다.
+초기 사용자 보고는 Isaac Sim 6.0.1이었고, 실제 설치본은 `6.1.0-rc.26+release.49347.2d230af4.gl`로 확인했다. 기준 검증 경로는 Windows의 `C:\isaacsim\python.bat`를 사용하는 Standalone headless이며, 메인 USD에는 GUI Play용 Behavior Script를 연결했다. 실제 Timeline 이벤트 검증과 GUI 직접 클릭 검증을 구분한다. 환경 기록은 [real_environment.md](real_environment.md)를 따른다.
 
 - Isaac Sim 정확한 버전, OS, GPU 및 Driver
 - GUI 내부 Script / Extension / Standalone 중 기준 실행 방식
@@ -76,13 +80,13 @@ Detection이나 Crop 추출은 Recognition 실험에 필요한 입력 처리로 
 | Lighting | 위치, 세기, 색온도, 주변광, 그림자 | 대표 실제 영상과 Render의 밝기·그림자 비교 |
 | 영상 효과 | 번짐/Glow, Blur, Noise, Depth of Field 필요성 | 숫자 경계와 작은 문자·기호의 가독성 비교 |
 
-LED/Emission을 구현 후보로 사용하되 숫자 생성 방식은 아직 확정하지 않는다. Texture, Geometry 등 구현 선택은 실제 영상 재현성과 값 변경·정답 생성의 안정성을 비교해 기록한다. Base Scene의 비교 결과와 허용 오차를 정한 뒤 대량 생성으로 넘어간다.
+현재 숫자는 발광 재질을 적용한 세그먼트 Mesh로 구현했고, 미리 준비한 숫자 Mesh를 Fabric Transform으로 선택·배치한다. 렌더러 FFT Bloom으로 빛번짐을 표현하며 현재 scale 0.4, cutoff RGB 0.5, isotropic falloff RGB 5다. 이는 시각 조정값이며 실측 광학값이나 최종 랜덤화 범위는 아니다. Base Scene과 실영상의 정량 비교 및 최종 허용 기준은 남아 있다.
 
 ## 6. Dataset 생성
 
 기본 순서: Config 로드 → 표시 문자열 생성 → CP Display 갱신 → Camera/Lighting 적용 → Render → Image와 Ground Truth 저장 → 검증.
 
-Recognition용 Crop Dataset을 우선 검토하며, Full Frame 저장 여부와 Crop 추출 방식은 `docs/dataset_spec.md`에서 확정한다. Full Frame에 여러 숫자 영역이 있으면 영역별 위치 정보와 식별자가 필요하다.
+현재 전체 프레임과 Recognition Crop을 함께 저장한다. 정면 중앙 직교 카메라의 3840×2160 프레임에서 숫자 Mesh 투영 bbox에 4픽셀 여백을 더해 Crop하고, 정확한 문자열·Frame/Panel/Slot ID·Hash를 연결한다. YOLO용으로 Panel별 이미지와 단일 `slot` 클래스의 6개 bbox도 출력한다. 구현된 규격은 [training_capture.md](training_capture.md), [panel_detection.md](panel_detection.md)를 따른다. 아래 항목 중 실제 값 분포·Real Split 등은 후속 실험에서 확정한다.
 
 데이터 규격에서 결정할 내용:
 
@@ -146,7 +150,7 @@ press-cp-digital-twin/
 │   ├── assets/{press,cp_panel,environment}/
 │   ├── materials/
 │   └── scripts/
-│       ├── scene_setup.py
+│       ├── full_scene_setup.py
 │       ├── display_controller.py
 │       ├── camera_controller.py
 │       └── capture_dataset.py
@@ -178,7 +182,7 @@ Notion의 Branch 제안은 `main` / `develop` / `feature/*`이다. 예: `feature
 | 5 — Domain Randomization | Light, Camera, Display, Material, Blur/Noise의 단계별 실험 | 각 조건을 Config로 전환할 수 있고 결과와 생성 조건을 추적할 수 있음 |
 | 6 — OCR 학습·비교 | Baseline / Synthetic Only / Mixed, 공통 Real Test 평가, 오류·Domain Gap 분석 | 동일한 평가 조건에서 정량 결과와 재현 정보를 제시할 수 있음 |
 
-Phase 5의 조건 선택에는 Validation을 사용하며, 필요하면 Phase 6의 학습 처리를 먼저 소규모로 실행한다. 모든 Phase의 실제 완료 여부는 현재 미확인 상태이다.
+Phase 5의 조건 선택에는 Validation을 사용하며, 필요하면 Phase 6의 학습 처리를 먼저 소규모로 실행한다. 현재 Phase 0·1은 기록된 범위에서 종료했고, Base Scene·숫자 자동화·소규모 캡처를 구현·검증했다. Phase 4 진행 상태로 관리하며 대량 생성·실험 Split 확정·단계별 랜덤화·모델 학습과 Real 평가는 남아 있다. 빛번짐 한 가지의 고정 설정 조정을 Phase 5 전체 완료로 간주하지 않는다.
 
 ## 10. 평가와 실험 기록
 
@@ -207,6 +211,6 @@ Phase 5의 조건 선택에는 Validation을 사용하며, 필요하면 Phase 6�
 | 현재 Phase·완료 근거·문제·다음 Task | docs/progress.md |
 | 채택한 판단·이유·영향 | docs/decisions.md |
 
-현재 확인한 내용은 Notion에 기재된 계획이다. 구현이 시작되지 않았거나 완료되었다고 단정하지 않는다. 먼저 Phase 0의 현재 상태를 확인하고, 완료 항목은 Commit·파일·실행 결과를 근거로 기록한다.
+2026-10-01 현재 7 Panel·21 Module·42 Slot의 CP 환경, `0.0~999.0` 순차 표시, 프레임별 무작위 숫자 선택·렌더 안정화·이미지/정답 저장, Panel 단위 YOLO 내보내기가 구현됐다. 기존 합성 산출물 정리 후 현재 빛번짐 설정으로 `20261001T064808_756110Z` Run을 새로 생성했다. 전체 프레임 2장·Crop 84개·YOLO Panel 14장/박스 84개이며 생성 및 저장 데이터 검증을 통과했다.
 
-첫 작업: 저장 위치와 기존 Repository 확인, Isaac Sim의 정확한 버전과 실행 방식 확인, 기존 파일을 바탕으로 Phase 0의 부족한 부분 정비.
+현재 산출물과 재실행 명령, 과거 삭제된 검증 이력은 [progress.md](progress.md)에서 구분한다. 다음 작업은 생성 규모와 실험 분할 조건을 정하고 모델 학습·실영상 평가로 연결하는 것이다. 이 문서 정리에서는 코드 변경·추가 렌더·학습·Commit/Push를 수행하지 않았다.

@@ -7,8 +7,8 @@
                 double radius = 5
             }
             dictionary Perspective = {
-                double3 position = (5, 5, 5)
-                double3 target = (-3.978038609631085e-8, -3.978038431995401e-8, 7.956077041626486e-8)
+                double3 position = (-0.05945086333711994, -2.089482772855458, 1.0581105900714154)
+                double3 target = (-0.1589556526234995, 6.543868698797672, 0.38332087185260855)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
@@ -18,24 +18,55 @@
                 double3 position = (0, 0, 5)
                 double radius = 5
             }
-            string boundCamera = "/World/Cameras/reference"
+            string boundCamera = "/World/Cameras/training"
         }
-        string code_sha256 = "f8c81c2a50e7c38ea3947a954f3b9e903254f8cb0b87e97a4dcdf77ddf0f3977"
-        string config_sha256 = "79e57d92ec73d73b07511d3f9502adaf69f5012dbd315a7d5ec38ec09075bfe8"
+        string code_sha256 = "1bcd2200d20b165f24b0b0a8d669a05f16207943cbb29f85ef7a21ba76764cfe"
+        string config_sha256 = "f15efbe9bc6d061d30c241b7fdac99b21cda6fbba4cfc9644eefb159a752964e"
         string dataset_status = "not_training_data"
         string dimension_status = "provisional_not_measured"
         string generator = "press-cp/full-environment/v1"
+        dictionary omni_layer = {
+            string authoring_layer = "./press_cp_main.usda"
+        }
         string reference = "IMG_2631.MOV @ 4 s"
         dictionary renderSettings = {
+            double "rtx:directLighting:sampledLighting:maxRayUnexposedIntensity" = 6399.9990234375
+            double "rtx:indirectDiffuse:maxRayUnexposedIntensity" = 6399.9990234375
+            double "rtx:pathtracing:fireflyFilter:maxPerEmissiveUnexposedIntensity" = 3199.99951171875
+            double "rtx:pathtracing:fireflyFilter:maxUnexposedIntensityPerSample" = 3199.99951171875
+            double "rtx:pathtracing:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse" = 3199.99951171875
+            double "rtx:post:lensFlares:anisoFlareWeight" = 0
+            double "rtx:post:lensFlares:cutoffFuzziness" = 0.1
+            bool "rtx:post:lensFlares:enabled" = 1
+            bool "rtx:post:lensFlares:energyConstrainingBlend" = 0
+            double "rtx:post:lensFlares:flareScale" = 0.4
+            double "rtx:post:lensFlares:haloFlareWeight" = 0
+            double "rtx:post:lensFlares:isotropicFlareWeight" = 1
+            bool "rtx:post:lensFlares:physicalSettings" = 0
+            double "rtx:raytracing:inscattering:maxRTSampleUnexposedIntensity" = 204799.96875
+            double "rtx:rtpt:fireflyFilter:maxPerEmissiveUnexposedIntensity" = 3199.99951171875
+            double "rtx:rtpt:fireflyFilter:maxUnexposedIntensityPerSample" = 3199.99951171875
+            double "rtx:rtpt:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse" = 3199.99951171875
+            double "rtx:translucency:maxRayUnexposedIntensity" = 19199.998046875
         }
     }
     defaultPrim = "World"
+    startTimeCode = 0
+    endTimeCode = 60000
+    timeCodesPerSecond = 60
     metersPerUnit = 1
     upAxis = "Z"
 )
 
 def Xform "World"
 {
+    def Scope "DisplayPlayback" (
+        prepend apiSchemas = ["OmniScriptingAPI"]
+    )
+    {
+        asset[] omni:scripting:scripts = [@../scripts/press_cp_play_behavior.py@]
+    }
+
     def Xform "Cabinet" (
         prepend references = @../assets/cp_panel/press_cp_cabinet.usda@
     )
@@ -50,6 +81,20 @@ def Xform "World"
 
     def "Cameras"
     {
+        def Camera "training"
+        {
+            float2 clippingRange = (0.01, 100)
+            float focalLength = 50
+            float fStop = 0
+            float horizontalAperture = 25.61326
+            float horizontalApertureOffset = 0
+            token projection = "orthographic"
+            float verticalAperture = 14.407458
+            float verticalApertureOffset = 0
+            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 0, 1, 0), (0, -1, 0, 0), (0.042568790516087585, -3.064000003039837, 0.7721273864509105, 1) )
+            uniform token[] xformOpOrder = ["xformOp:transform"]
+        }
+
         def Camera "reference" (
             prepend apiSchemas = ["OmniRtxCameraAutoExposureAPI_1", "OmniRtxCameraExposureAPI_1"]
         )
@@ -60,15 +105,22 @@ def Xform "World"
             float exposure:time = 0.02
             float focalLength = 33.75
             float horizontalAperture = 36
+            bool omni:kit:cameraLock = 0
+            custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -2.56124969497314)
             token projection = "perspective"
             float verticalAperture = 20.25
-            matrix4d xformOp:transform = ( (1, 0, -0, 0), (0, 0.3420201433122246, 0.9396926207908018, 0), (0, -0.9396926207908018, 0.3420201433122246, 0), (0, -2, 1.6000000000000005, 1) )
+            matrix4d xformOp:transform = ( (0.9999768327466512, 0.006806906049443495, 2.8620226848186103e-16, 0), (-0.00027751440815379215, 0.04076859249874732, 0.9991685767934456, 0), (0.006801246629789362, -0.9991454288018927, 0.040769537016940784, 0), (-0.062454909977187986, -2.207565278762496, 0.9155513497213136, 1) )
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
 
-        def Camera "overview"
+        def Camera "overview" (
+            prepend apiSchemas = ["OmniRtxCameraAutoExposureAPI_1", "OmniRtxCameraExposureAPI_1"]
+        )
         {
             float2 clippingRange = (0.01, 100)
+            float exposure:fStop = 5
+            float exposure:responsivity = 1.1026709
+            float exposure:time = 0.02
             float focalLength = 42
             float horizontalAperture = 36
             token projection = "perspective"
@@ -77,9 +129,14 @@ def Xform "World"
             uniform token[] xformOpOrder = ["xformOp:transform"]
         }
 
-        def Camera "detail"
+        def Camera "detail" (
+            prepend apiSchemas = ["OmniRtxCameraAutoExposureAPI_1", "OmniRtxCameraExposureAPI_1"]
+        )
         {
             float2 clippingRange = (0.01, 100)
+            float exposure:fStop = 5
+            float exposure:responsivity = 1.1026709
+            float exposure:time = 0.02
             float focalLength = 48
             float horizontalAperture = 36
             token projection = "perspective"
@@ -134,7 +191,7 @@ def "Render" (
                 no_delete = true
             )
             {
-                rel camera = </World/Cameras/reference>
+                rel camera = </World/Cameras/training>
                 token omni:rtx:ambientOcclusion:denoiserMode = "none"
                 token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
                 token omni:rtx:background:source:type = "domeLight"
@@ -143,12 +200,24 @@ def "Render" (
                 bool omni:rtx:dlss:frameGeneration = 0
                 bool omni:rtx:indirectDiffuse:denoiser:enabled = 0
                 bool omni:rtx:material:db:syncLoads = 1
+                float3 omni:rtx:post:bloom:cutoff = (0.5, 0.5, 0.5)
+                float omni:rtx:post:bloom:cutoffFuzziness = 0.1
+                bool omni:rtx:post:bloom:enabled = 1
+                float omni:rtx:post:bloom:scale = 0.4
                 token omni:rtx:post:dlss:execMode = "performance"
+                float omni:rtx:post:lensFlares:anisoFlareWeight = 0
+                float omni:rtx:post:lensFlares:haloFlareWeight = 0
+                float3 omni:rtx:post:lensFlares:isotropicFlareFalloff = (5, 5, 5)
+                float omni:rtx:post:lensFlares:isotropicFlareWeight = 1
+                bool omni:rtx:post:lensFlares:physicalSettings = 0
                 bool omni:rtx:post:registeredCompositing:invertColorCorrection = 1
                 bool omni:rtx:post:registeredCompositing:invertToneMap = 1
                 bool omni:rtx:pt:adaptiveSampling:filterError = 0
                 uint omni:rtx:pt:adaptiveSampling:fixedSppIterations = 2
                 int omni:rtx:pt:clampSpp = 64
+                float omni:rtx:pt:fireflyFilter:maxPerEmissiveUnexposedIntensity = 3199.9995
+                float omni:rtx:pt:fireflyFilter:maxUnexposedIntensityPerSample = 3199.9995
+                float omni:rtx:pt:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse = 3199.9995
                 uint omni:rtx:pt:limits:maxBounces = 3
                 uint omni:rtx:pt:limits:maxGlossyBounces = 3
                 uint omni:rtx:pt:maxSamplesPerLaunch = 2073600
@@ -159,15 +228,22 @@ def "Render" (
                 token omni:rtx:rendermode = "RealTimePathTracing"
                 color3f omni:rtx:rt:ambientLight:color = (0.1, 0.1, 0.1)
                 bool omni:rtx:rt:demoire = 0
+                float omni:rtx:rt:directLighting:maxRayUnexposedIntensity = 6399.999
+                float omni:rtx:rt:indirectdiffuse:maxRayUnexposedIntensity = 6399.999
+                float omni:rtx:rt:inscattering:maxRTSampleUnexposedIntensity = 204799.97
                 bool omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts = 1
+                float omni:rtx:rt:refractions:maxRayUnexposedIntensity = 19199.998
                 int omni:rtx:rt:sss:samples = 1
+                float omni:rtx:rtpt:fireflyFilter:maxPerEmissiveUnexposedIntensity = 3199.9995
+                float omni:rtx:rtpt:fireflyFilter:maxUnexposedIntensityPerSample = 3199.9995
+                float omni:rtx:rtpt:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse = 3199.9995
                 uint omni:rtx:rtpt:maxVolumeBounces = 15
                 float omni:rtx:rtpt:modulatingRoughnessThreshold = 0.08
                 bool omni:rtx:scene:hydra:materialSyncLoads = 1
                 bool omni:rtx:scene:hydra:mdlMaterialWarmup = 1
                 rel orderedVars = </Render/Vars/LdrColor>
                 custom bool overrideClipRange = 0
-                uniform int2 resolution = (1920, 1080)
+                uniform int2 resolution = (1280, 720)
             }
         }
     }
@@ -197,6 +273,7 @@ def "Render" (
 }
 
 over "OmniverseKit_Persp" (
+    prepend apiSchemas = ["OmniRtxCameraAutoExposureAPI_1", "OmniRtxCameraExposureAPI_1"]
     customData = {
         dictionary omni = {
             dictionary kit = {
@@ -211,12 +288,15 @@ over "OmniverseKit_Persp" (
 )
 {
     float2 clippingRange = (0.01, 10000000)
+    float exposure:fStop = 5
+    float exposure:responsivity = 1.1026709
+    float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
     custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -8.660254037844386)
-    float3 xformOp:rotateXYZ = (54.73561, -6.3611094e-15, 135)
+    float3 xformOp:rotateXYZ = (85.5311, -3.940906e-14, 0.66034055)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (5, 5, 5)
+    double3 xformOp:translate = (-0.05945086333711994, -2.089482772855458, 1.0581105900714154)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -294,4 +374,3 @@ over "OmniverseKit_Top" (
     double3 xformOp:translate = (0, 0, 5)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
-

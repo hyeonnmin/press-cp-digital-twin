@@ -153,6 +153,12 @@ def materials(s,root,cfg):
         sh.CreateInput("metallic",Sdf.ValueTypeNames.Float).Set(entry.get("metallic",0))
         if "opacity" in entry: sh.CreateInput("opacity",Sdf.ValueTypeNames.Float).Set(entry["opacity"])
         if "emission" in entry: sh.CreateInput("emissiveColor",Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(*entry["emission"]))
+        if "emission_color" in entry:
+            intensity = entry["emission_intensity"]
+            if intensity < 0 or not math.isfinite(intensity):
+                raise ValueError(f"발광 세기 오류: {name}")
+            emission = [float(v) * intensity for v in entry["emission_color"]]
+            sh.CreateInput("emissiveColor",Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(*emission))
         mat.CreateSurfaceOutput().ConnectToSource(sh.ConnectableAPI(),"surface"); mats[name]=mat
     return mats
 
@@ -350,9 +356,23 @@ def aim(prim,settings):
     UsdGeom.Xformable(prim).AddTransformOp().Set(matrix)
 
 
+def author_render_settings(s,cfg):
+    """Kit 저장 시 생략되는 기본값까지 명시해 다른 앱 세션에서 재현한다."""
+    layer=s.GetRootLayer()
+    data=dict(layer.customLayerData)
+    settings=dict(data.get("renderSettings",{}))
+    settings.update({key.lstrip("/").replace("/", ":"): Gf.Vec3d(*value) if isinstance(value,list) else value for key,value in cfg["rendering"]["settings"].items()})
+    data["renderSettings"]=settings
+    layer.customLayerData=data
+
+
 def build():
     cfg=read_config(); cp_label_textures.generate(); cabinet(cfg); workcell(cfg)
     s=stage("/World");save(s,SCENE);s=Usd.Stage.Open(str(SCENE))
+    playback=UsdGeom.Scope.Define(s,"/World/DisplayPlayback").GetPrim()
+    playback.SetMetadata("apiSchemas",Sdf.TokenListOp.Create(prependedItems=["OmniScriptingAPI"]))
+    playback.CreateAttribute("omni:scripting:scripts",Sdf.ValueTypeNames.AssetArray).Set([Sdf.AssetPath("../scripts/press_cp_play_behavior.py")])
+    s.SetStartTimeCode(0);s.SetEndTimeCode(60000);s.SetTimeCodesPerSecond(60)
     for name,path in [("Cabinet","../assets/cp_panel/press_cp_cabinet.usda"),("Workcell","../assets/environment/workcell.usda")]:
         UsdGeom.Xform.Define(s,f"/World/{name}").GetPrim().GetReferences().AddReference(path)
     for name in ["reference","overview","detail"]:
@@ -364,7 +384,11 @@ def build():
     for name in ["key","fill"]:
         e=cfg["lighting"][name];l=UsdLux.RectLight.Define(s,f"/World/Lights/{name}")
         l.CreateIntensityAttr(e["intensity"]);l.CreateWidthAttr(e["width"]);l.CreateHeightAttr(e["height"]);aim(l.GetPrim(),e)
-    s.GetRootLayer().customLayerData={**s.GetRootLayer().customLayerData,"cameraSettings":{"boundCamera":"/World/Cameras/reference"}}
+    # Kit이 USD 파일을 직접 열 때도 동일한 Bloom 설정을 복원한다.
+    from training_camera import configure as configure_training_camera
+    configure_training_camera(s,json.loads((ROOT/"config/training_capture.json").read_text(encoding="utf-8"))["camera"])
+    s.GetRootLayer().customLayerData={**s.GetRootLayer().customLayerData,"cameraSettings":{"boundCamera":"/World/Cameras/training"}}
+    author_render_settings(s,cfg)
     save(s,SCENE)
     return cfg
 
@@ -378,6 +402,22 @@ def validate(s,cfg):
     if (len(panels),len(modules),len(slots))!=(7,21,42): raise AssertionError("7 Panel / 21 Module / 42 Slot 구성 오류")
     ids=[p.GetCustomDataByKey("slot_id") for p in slots]
     if len(set(ids))!=42: raise AssertionError("Slot ID 중복")
+    for slot in slots:
+        lit=s.GetPrimAtPath(str(slot.GetPath())+"/Lit")
+        material,_=UsdShade.MaterialBindingAPI(lit).ComputeBoundMaterial()
+        shader=UsdShade.Shader(s.GetPrimAtPath(str(material.GetPath())+"/Surface"))
+        value=shader.GetInput("emissiveColor").Get()
+        name="green_led" if slot.GetName()=="slot_1" else "amber_led"
+        entry=cfg["materials"][name]
+        expected=[v*entry["emission_intensity"] for v in entry["emission_color"]]
+        if value is None or any(abs(a-b)>1e-5 for a,b in zip(value,expected)):
+            raise AssertionError(f"LED 발광 재질 오류: {slot.GetPath()}")
+    saved_settings=s.GetRootLayer().customLayerData.get("renderSettings",{})
+    for key,value in cfg["rendering"]["settings"].items():
+        stored=saved_settings.get(key.lstrip("/").replace("/",":"))
+        if isinstance(value,list):
+            if stored is None or any(abs(a-b)>1e-5 for a,b in zip(stored,value)): raise AssertionError(f"렌더 설정 저장 오류: {key}")
+        elif stored!=value: raise AssertionError(f"렌더 설정 저장 오류: {key}")
     xf=UsdGeom.XformCache(); centers=[]; projection_errors=[]
     camera=UsdGeom.Camera(s.GetPrimAtPath("/World/Cameras/reference")).GetCamera(Usd.TimeCode.Default())
     viewproj=camera.frustum.ComputeViewMatrix()*camera.frustum.ComputeProjectionMatrix()

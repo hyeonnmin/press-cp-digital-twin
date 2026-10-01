@@ -1,89 +1,56 @@
-\# Press CP Digital Twin
+# Press CP Digital Twin
 
-## 현재 전체 CP Scene
+실제 프레스 CP 환경을 Isaac Sim에서 재현하고, 합성 데이터로 학습한 OCR Recognition 모델을 실제 영상에서 평가하는 프로젝트다. Baseline, Synthetic Only, Mixed를 공통 Real Test에서 비교할 계획이며 모델 학습·최종 평가는 아직 수행하지 않았다.
 
-Isaac Sim에서 `isaac_sim/stages/press_cp_main.usda`를 연다. 영상의 좌우 제어반, 7 Panel·21 Module·42개 숫자 표시줄, HMI·버튼·주변 배관을 포함한다.
+## 현재 상태 — 2026-10-01
 
-- [전체 환경 열기·실행법](docs/phase2_full_scene.md)
-- [최신 진행 상황](docs/progress.md)
-- 설정: `config/press_cp_scene.json`
-- 카메라: `/World/Cameras/reference`, `/World/Cameras/overview`, `/World/Cameras/detail`
+Phase 4 진행 중이다. 7 Panel·21 Module·42 Slot의 CP Scene, 숫자 순차 표시, 프레임별 학습 데이터 생성 및 Panel 단위 YOLO 라벨 출력을 구현하고 소규모 검증을 마쳤다. 대량 생성·실험 Split 확정·단계별 랜덤화·모델 학습은 남아 있다.
 
-현재 설치본 6.1.0 RC에서 검증했다. 아래 6.0.1 실행 기록은 초기 사용자 확인 이력이다.
+메인 Scene은 `isaac_sim/stages/press_cp_main.usda`다. Play에서 기본 0.1초 간격으로 `0.0~999.0`을 0.1씩 증가시키고, Pause는 유지, Stop은 0.0으로 초기화한다. 학습 저장은 별도 생성 명령을 사용한다.
 
+최신 학습용 데이터는 [`20261001T064808_756110Z`](datasets/synthetic/cp_training/20261001T064808_756110Z/)다.
 
+| 산출물 | 수량·조건 |
+|---|---|
+| 전체 프레임 | 2장, 3840×2160 |
+| Recognition Crop·정답 | 84개 |
+| YOLO Panel·bbox | 14장·84개, 단일 클래스 `0: slot` |
+| YOLO 분할 | 원본 프레임 단위 Train 7장 / Validation 7장 |
+| 생성 조건 | Seed 42, Bloom scale 0.4 / cutoff 0.5 / isotropic falloff 5 |
+| 검증 | 생성·독립 저장 데이터 검사 PASS, 정상 종료 코드 0 |
 
-실제 프레스 CP 환경을 NVIDIA Isaac Sim에서 재현하고,
+별도 잔상 검증 이미지 3장은 학습 프레임 수에 포함하지 않는다. 이전 합성 Run과 과거 출력은 정리 요청으로 삭제했다. 위 링크는 로컬 산출물이며 대량 데이터·로그는 Git에 포함하지 않는다.
 
-합성 데이터로 학습한 OCR Recognition 모델의 실제 영상 일반화 성능을 평가한다.
+## 실행
 
+확인한 설치본은 Isaac Sim `6.1.0-rc.26+release.49347.2d230af4.gl`이다. 저장소 루트 PowerShell에서 실행한다.
 
+```powershell
+& C:\isaacsim\python.bat isaac_sim/scripts/generate_training_data.py --frames 2 --seed 42 --export-yolo
+```
 
-\## 비교 실험
+숫자 선택 → subframe 렌더 안정화 → 이미지·정답 저장 순서로 실행한다. 기본 카메라는 `/World/Cameras/training`(정면 중앙 직교 시점)이며, 기존 `reference`, `overview`, `detail`도 유지한다. 설정은 `config/press_cp_scene.json`, `config/training_capture.json`, `config/panel_detection.json`에서 관리한다. 검토용 출력은 `--output-root outputs/<검토 폴더>`로 분리할 수 있다.
 
-\- Baseline: Real Train으로 학습
+## 문서
 
-\- Synthetic Only: Synthetic Train으로 학습
+- [현재까지의 진행 요약·검증 결과·남은 작업](docs/progress.md)
+- [프로젝트 목표·범위·로드맵](docs/project_overview.md)
+- [주요 결정과 이유](docs/decisions.md)
+- [실행 환경](docs/real_environment.md)
+- [전체 CP 환경 열기·생성](docs/phase2_full_scene.md)
+- [Play/Pause/Stop 및 연속 숫자 표시](docs/display_playback.md)
+- [학습 데이터 생성·저장 형식·빛번짐 설정](docs/training_capture.md)
+- [YOLO Panel 이미지·Slot bbox 추출](docs/panel_detection.md)
+- [초기 Mesh 동기화 검증 이력](docs/phase4_capture.md)
 
-\- Mixed: Real Train + Synthetic Train으로 학습
+## 폴더 역할
 
-\- 평가: 공통 Real Test Dataset 사용
+- `docs`: 계획·환경·진행·실험 기록
+- `config`: Camera·Light·Material·Display·데이터 생성 설정
+- `isaac_sim`: USD Scene/Asset과 Isaac Sim 실행 코드
+- `src`: 값 생성·데이터 변환·검증 로직
+- `datasets`: 합성·실제 데이터
+- `outputs`: 검토 이미지·실행 로그·검증 보고서
+- `tests`: 생성 규칙·좌표 변환 등 단위 테스트
 
-
-
-\## 주요 문서
-
-\- 공통 계획: docs/project\_overview.md
-
-\- 진행 상태: docs/progress.md
-
-\- 환경 정보: docs/real\_environment.md
-
-\- Codex 작업 규칙: AGENTS.md
-
-
-
-\## 폴더 역할
-
-\- docs: 계획, 환경, 진행 및 실험 기록
-
-\- config: Camera, Light, Material, Display 설정
-
-\- isaac\_sim: USD Scene/Asset과 앱 내부 스크립트
-
-\- src: 데이터 생성, 검증, 평가 로직
-
-\- experiments: 실험 설정과 결과 요약
-
-\- tests: 필요한 검증 코드
-
-
-
-빈 폴더는 Git에 기록되지 않으며 세부 구조는 구현 시 추가한다.
-
-
-
-\## 현재 검증된 실행 방식
-
-\- Isaac Sim 6.0.1
-
-\- 앱 실행: C:\\isaacsim\\isaac-sim.bat
-
-\- 코드 실행: GUI의 Window > Script Editor
-
-
-
-Script Editor에서 다음 코드를 실행한다.
-
-
-
-```python
-
-script\_path = r"C:\\Projects\\press-cp-digital-twin\\isaac\_sim\\scripts\\check\_environment.py"
-
-
-
-with open(script\_path, encoding="utf-8-sig") as file:
-
-&#x20;   exec(compile(file.read(), script\_path, "exec"))
-
+실제 치수·광학 조건·Real Train/Validation/Test 구간은 미확정이다. 현재의 이미지·정답 동기화 검증과 실제 영상에서의 모델 성능 평가를 구분한다. 작업 규칙은 [AGENTS.md](AGENTS.md)를 따른다.

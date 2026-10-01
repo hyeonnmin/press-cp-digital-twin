@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reference": {"video": "IMG_2631.MOV", "sha256": "e20d0d72bf3cc8522939055fc053f2edadd9ad0cb6e3022489755ccd9742139b", "frame_seconds": 4.0, "resolution": [1920,1080], "status": "영상에서 수동으로 읽은 근사 bbox. 기존 Split 미확인, 예비 외형 재현 전용."},
+  "reference": {"video": "IMG_2631.MOV", "sha256": "e20d0d72bf3cc8522939055fc053f2edadd9ad0cb6e3022489755ccd9742139b", "frame_seconds": 4.0, "resolution": [1920,1080], "status": "영상에서 수동으로 읽은 근사 bbox. Train/Test 구간 미정(2026-10-01 사용자 확인), 예비 외형 재현 전용."},
   "units": {"up_axis":"Z", "meters_per_unit":1.0, "front":"-Y", "status":"모든 m 치수는 가상 카메라 가정에 따른 임시 모델링 치수이며 실측값이 아님"},
   "cabinet": {"width":1.77,"bottom":0.025,"top":1.525,"depth":0.3,"seam_x":-0.023,"door_gap":0.008,"door_thickness":0.024,"module_depth":0.023,"bevel":0.003},
   "camera": {
@@ -21,8 +21,8 @@
     "ivory":{"color":[0.64,0.63,0.58],"roughness":0.65},
     "red":{"color":[0.40,0.018,0.012],"roughness":0.3},
     "green":{"color":[0.08,0.20,0.013],"roughness":0.26,"opacity":0.38},
-    "green_led":{"color":[0.14,0.32,0.005],"roughness":0.4,"emission":[1.6,2.4,0.02]},
-    "amber_led":{"color":[0.38,0.14,0.006],"roughness":0.4,"emission":[1.4,0.65,0.015]},
+    "green_led":{"color":[0,0,0],"roughness":0.4,"emission_color":[0.39,1.0,0.057],"emission_intensity":1.15},
+    "amber_led":{"color":[0,0,0],"roughness":0.4,"emission_color":[1.0,0.48,0.13],"emission_intensity":0.5},
     "red_led":{"color":[0.3,0.006,0.005],"emission":[1.5,0.015,0.01],"roughness":0.4},
     "off_segment":{"color":[0.018,0.027,0.017],"roughness":0.5},
     "floor":{"color":[0.27,0.29,0.28],"roughness":0.9},
@@ -31,7 +31,22 @@
     "pipe_green":{"color":[0.02,0.10,0.07],"roughness":0.4,"metallic":0.25},
     "valve_blue":{"color":[0.012,0.055,0.12],"roughness":0.35,"metallic":0.4}
   },
-  "display":{"status":"원본을 참고한 초기 화면 예시. 전사 검증된 정답이나 실제 생성 범위가 아님. 문자열 그대로 보존.","slot_y":[0.15,0.31],"main_x":0.72,"main_width":0.40,"digit_height":0.105,"vacuum_main_x":0.60,"vacuum_main_width":0.67,"vacuum_digit_height":0.12},
+  "rendering": {
+    "status":"2026-10-01 사용자 요청으로 숫자 빛번짐 강화: Bloom scale 0.4, cutoff 0.5, isotropic falloff 5. 동일 숫자 Crop 비교용 시각 조정값이며 실제 휘도·렌즈 측정값이나 최종 학습 조건이 아님.",
+    "settings": {
+      "/rtx/post/lensFlares/enabled":true,
+      "/rtx/post/lensFlares/flareScale":0.4,
+      "/rtx/post/lensFlares/cutoffPoint":[0.5,0.5,0.5],
+      "/rtx/post/lensFlares/cutoffFuzziness":0.1,
+      "/rtx/post/lensFlares/energyConstrainingBlend":false,
+      "/rtx/post/lensFlares/physicalSettings":false,
+      "/rtx/post/lensFlares/haloFlareWeight":0.0,
+      "/rtx/post/lensFlares/anisoFlareWeight":0.0,
+      "/rtx/post/lensFlares/isotropicFlareWeight":1.0,
+      "/rtx/post/lensFlares/isotropicFlareFalloff":[5.0,5.0,5.0]
+    }
+  },
+  "display":{"status":"숫자 세그먼트 자체가 Emission으로 발광하며 Bloom은 렌더러의 광학 번짐이다. 원본을 참고한 초기 화면 예시이며 전사 검증된 정답·실제 생성 범위가 아님. 문자열 그대로 보존.","slot_y":[0.15,0.31],"main_x":0.72,"main_width":0.40,"digit_height":0.105,"vacuum_main_x":0.60,"vacuum_main_width":0.67,"vacuum_digit_height":0.12},
   "panels":[
     {"id":"panel_1","number":1,"door":"left","label_bbox":[455,56,592,88],"stop_center":[754,225],"stop_radius_px":43,"number_bbox":[826,203,877,259],"modules":[{"id":"temperature","bbox":[290,126,433,260],"text":["195.5","34.3"]},{"id":"pressure","bbox":[462,125,602,259],"text":["7.5","54.9"]},{"id":"vacuum","bbox":[637,125,704,257],"text":["7.0","5.0"]}]},
     {"id":"panel_2","number":2,"door":"left","label_bbox":[476,274,608,305],"stop_center":[765,440],"stop_radius_px":41,"number_bbox":[829,413,882,468],"modules":[{"id":"temperature","bbox":[315,343,454,468],"text":["176.9","49.4"]},{"id":"pressure","bbox":[482,341,615,467],"text":["5.3","45.2"]},{"id":"vacuum","bbox":[648,342,716,465],"text":["100.1","5.0"]}]},
