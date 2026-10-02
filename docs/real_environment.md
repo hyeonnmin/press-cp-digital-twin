@@ -1,10 +1,12 @@
 # 실행환경과 실제 CP 환경 분석
 
-최종 갱신: 2026-10-01 (Asia/Seoul)
+최종 갱신: 2026-10-02 (Asia/Seoul)
 
 분석 상태: Phase 1 완료 — 현재 보유 자료 범위의 분석 종료
 
-현재 Phase: 2 — 전체 정적 CP 가상환경 생성·저장·재열기·렌더 검증 완료
+현재 프로젝트 Phase: 4 진행 — 숫자 자동화·소규모 학습 생성 검증 완료, 대량 생성·Split·모델 학습·평가는 남음. 이 문서의 본문은 주로 Phase 1 분석 및 Phase 2 구축 당시의 관측 이력이다.
+
+2026-10-02 추가 확인: 기존 CP를 보존한 공장 실내 확장을 설치본 `6.1.0-rc.26+release.49347.2d230af4.gl`의 Standalone headless에서 생성·재열기·렌더 검증했다. 사진 밖 구조·치수·조명은 가정이며 실제 환경의 추가 실측은 없다. 새 환경의 GUI Play·학습 생성 회귀는 남아 있다. [공장 환경 안내](factory_environment.md), [현재 진행 상황](progress.md)을 따른다.
 
 2026-10-01 추가 확인: 사용자가 Train/Test 구간은 아직 정하지 않았다고 밝혔다. 4초 프레임의 42 Slot Crop 비교와 LED Emission·Bloom 수정을 수행했다. 최종 실험 분할과 유사성 합격은 미완료이며 상세 결과는 [phase2_full_scene.md](phase2_full_scene.md)에 기록한다.
 
@@ -17,7 +19,7 @@ Phase 1 완료는 휴대폰 영상의 관찰 결과와 자료 한계를 정리�
 | OS | Windows-11-10.0.26200-SP0 | Phase 0 스크립트 출력 |
 | Isaac Sim 현재 설치본 | 6.1.0-rc.26+release.49347.2d230af4.gl | 2026-09-30 VERSION·앱 Config·실제 Standalone 실행 직접 확인. 기존 6.0.1은 Phase 0 사용자 보고 이력 |
 | 앱 실행 | `C:\isaacsim\isaac-sim.bat` | 사용자 확인 |
-| 기준 코드 실행 방식 | GUI Script Editor | Phase 0 사용자 실행 결과. 이번 Phase 2 직접 검증은 GUI 제어 연결 실패로 Standalone headless 사용 |
+| 기준 검증 방식 | Standalone headless (`C:\isaacsim\python.bat`) | Phase 2 이후 직접 실행 및 2026-10-02 공장 환경 생성·재열기 검증. GUI Script Editor는 Phase 0 사용자 실행 이력이며, 현재 메인 USD에는 GUI Play용 Behavior를 연결함 |
 | Isaac Sim 내부 Python | 3.12.13 | Phase 0 스크립트 출력 |
 | GPU | NVIDIA GeForce RTX 4070 SUPER | Phase 0 nvidia-smi 출력 |
 | GPU Driver | 591.86 | Phase 0 nvidia-smi 출력 |

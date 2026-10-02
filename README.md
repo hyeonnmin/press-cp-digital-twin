@@ -2,13 +2,19 @@
 
 실제 프레스 CP 환경을 Isaac Sim에서 재현하고, 합성 데이터로 학습한 OCR Recognition 모델을 실제 영상에서 평가하는 프로젝트다. Baseline, Synthetic Only, Mixed를 공통 Real Test에서 비교할 계획이며 모델 학습·최종 평가는 아직 수행하지 않았다.
 
-## 현재 상태 — 2026-10-01
+## 현재 상태 — 2026-10-02
 
 Phase 4 진행 중이다. 7 Panel·21 Module·42 Slot의 CP Scene, 숫자 순차 표시, 프레임별 학습 데이터 생성 및 Panel 단위 YOLO 라벨 출력을 구현하고 소규모 검증을 마쳤다. 대량 생성·실험 Split 확정·단계별 랜덤화·모델 학습은 남아 있다.
 
+기존 CP를 보존하면서 주변 배관·밸브·프레스 외형과 공장 기둥·보·천장·창·통로를 추가했다. 천장등 9개·창측 보조광 4개를 배치했으며 실제 Isaac Sim 생성·별도 프로세스 재열기·렌더 검증을 통과했다. 사진 밖 구조와 치수는 추정 구성이다. [공장 환경 안내](docs/factory_environment.md)에서 결과와 실행법을 확인한다.
+
 메인 Scene은 `isaac_sim/stages/press_cp_main.usda`다. Play에서 기본 0.1초 간격으로 `0.0~999.0`을 0.1씩 증가시키고, Pause는 유지, Stop은 0.0으로 초기화한다. 학습 저장은 별도 생성 명령을 사용한다.
 
+Scene 기본 시점은 `/World/Cameras/factory`, CP 주변 근접 시점은 `workcell`이다. 학습 생성기는 기존 정면 직교 `training`을 사용한다. 숫자 자동화의 기존 Timeline 검증과 새 환경의 정적 렌더 검증을 구분하며, 새 환경의 GUI Play·학습 생성 회귀는 아직 수행하지 않았다.
+
 최신 학습용 데이터는 [`20261001T064808_756110Z`](datasets/synthetic/cp_training/20261001T064808_756110Z/)다.
+
+이 Run은 **2026-10-02 공장 환경 확장 전** 생성한 데이터다. 새 Scene으로 생성하면 조명·주변 반사 조건이 달라지므로 별도 Run으로 검증한다.
 
 | 산출물 | 수량·조건 |
 |---|---|
@@ -29,7 +35,7 @@ Phase 4 진행 중이다. 7 Panel·21 Module·42 Slot의 CP Scene, 숫자 순차
 & C:\isaacsim\python.bat isaac_sim/scripts/generate_training_data.py --frames 2 --seed 42 --export-yolo
 ```
 
-숫자 선택 → subframe 렌더 안정화 → 이미지·정답 저장 순서로 실행한다. 기본 카메라는 `/World/Cameras/training`(정면 중앙 직교 시점)이며, 기존 `reference`, `overview`, `detail`도 유지한다. 설정은 `config/press_cp_scene.json`, `config/training_capture.json`, `config/panel_detection.json`에서 관리한다. 검토용 출력은 `--output-root outputs/<검토 폴더>`로 분리할 수 있다.
+숫자 선택 → subframe 렌더 안정화 → 이미지·정답 저장 순서로 실행한다. 학습 생성 기본 카메라는 `/World/Cameras/training`(정면 중앙 직교 시점)이며, 기존 `reference`, `overview`, `detail`도 유지한다. 설정은 `config/press_cp_scene.json`, `config/training_capture.json`, `config/panel_detection.json`에서 관리한다. 공장 구조·추가 조명·전경 카메라는 `config/factory_environment.json`에서 관리한다. 검토용 출력은 `--output-root outputs/<검토 폴더>`로 분리할 수 있다.
 
 ## 문서
 
@@ -38,6 +44,7 @@ Phase 4 진행 중이다. 7 Panel·21 Module·42 Slot의 CP Scene, 숫자 순차
 - [주요 결정과 이유](docs/decisions.md)
 - [실행 환경](docs/real_environment.md)
 - [전체 CP 환경 열기·생성](docs/phase2_full_scene.md)
+- [공장 실내·주변 설비·추가 카메라와 검증 결과](docs/factory_environment.md)
 - [Play/Pause/Stop 및 연속 숫자 표시](docs/display_playback.md)
 - [학습 데이터 생성·저장 형식·빛번짐 설정](docs/training_capture.md)
 - [YOLO Panel 이미지·Slot bbox 추출](docs/panel_detection.md)

@@ -1,17 +1,38 @@
 # 프로젝트 진행 상황
 
-최종 갱신: 2026-10-01 (Asia/Seoul)
+최종 갱신: 2026-10-02 (Asia/Seoul)
 
 현재 Phase: 4 진행 — 프레임 단위 학습 생성·정면 중앙 카메라·Mesh 기반 Crop 구현과 소규모 검증 완료. 대량 생성·실험 Split·OCR 학습 평가는 남음
 
-현재 작업: 강화한 빛번짐 설정으로 학습용 전체 프레임 2장, 숫자 Crop 84개, YOLO Panel 14장·박스 84개를 새로 생성하고 검증했다.
+현재 작업: 기존 CP를 보존하면서 주변 설비·공장 실내를 확장하고 실제 생성·별도 프로세스 재열기·렌더 검증을 완료했다. 기존 학습 Run은 그대로 유지한다.
 
-## 현재까지의 진행 요약 — 2026-10-01
+## 2026-10-02 — CP 보존 및 공장 실내 구성
+
+- 요청·관측: 사용자 제공 `frame_000001.png`의 CP는 유지하고 주변 환경과 실내를 구성한다. 좌우 회색 설비·배관, 우측 플랜지·녹색 밸브·핸드휠, 설비 베이스를 참고했다. 기준 이미지 SHA-256은 `config/factory_environment.json`에 기록했다.
+- 변경: CP 주변 배관·호스·플랜지·볼트·밸브와 받침을 보강하고, 기둥·보·천장·창·셔터문·케이블 트레이·작업 통로·프레스 외형을 추가했다. 천장등 9개와 창측 보조광 4개를 배치했다. 별도 Config·생성기·환경 USD를 사용하며 기존 전체 재생성 경로에도 연결했다.
+- 보존: CP Asset·텍스처·기존 Scene/학습/Play Config·Behavior 진입점의 파일 Hash 불변. CP·기존 4개 카메라·기존 조명·Behavior를 포함한 보호 Prim 701개의 구성·속성·관계를 비교했다. 7 Panel·21 Module·42 고유 Slot과 표시 문자열을 유지한다. 새 카메라 `factory`, `workcell`을 추가하고 메인 기본 시점을 `factory`로 설정했다. 학습 생성의 `training` 카메라 설정은 유지한다.
+- 가정: 실내 12×14 m·높이 약 4.8 m, 사진 밖 건축·후방 프레스·조명은 임시 시각 구성이다. 실제 공장 치수·설비 기능·조도를 복원한 것이 아니다. Seed null, 랜덤화 없음.
+- 실제 실행: Isaac Sim `6.1.0-rc.26+release.49347.2d230af4.gl`, Standalone headless. 생성 `outputs/factory_environment/20261002T023626_551882Z/`, 별도 프로세스 재열기 `20261002T023707_135387Z/` 모두 `FACTORY_ENVIRONMENT_OK`, PASS, 종료 코드 0. 전체·근접·reference·training의 1920×1080 렌더 및 재열기 전체·reference 렌더를 저장했다. 전체·근접·정면 이미지를 직접 확인했다.
+- 검증: 저장·재열기, CP 보존, 구조·조명 존재, 텍스처 참조, PNG 크기·디코딩, Config/코드/Asset/렌더/보존 파일 SHA-256 대조 통과. 기존 단위 테스트 12개·Python 문법·`git diff --check` 통과. 각 보고서에 실제 Config·렌더 설정·버전·Commit·dirty 상태를 기록했다.
+- 발견·수정: 샌드박스 OmniCache 접근 실패 후 승인된 환경에서 실행했다. 숫자로 시작하는 창문 Prim 경로를 수정했다. 첫 실내 렌더가 어두워 천장등·창측 보조광을 조정했다. Kit의 Camera 노출 속성 자동 변환은 런타임 diff로 기록하고 저장하지 않았다. USD 레이어 캐시는 디스크 재검사로 간주하지 않으며 저장 후 파일 Hash 불변과 별도 프로세스 재열기로 확인했다.
+- 한계: Headless에서 Behavior 스크립트 실행 허용 UI 경고가 있어 GUI Play 실행은 이번 검증 대상에 포함하지 않는다. 실제 GUI의 열린 Stage는 자동 교체하지 않았다. 새 환경에서 학습 데이터 생성·OCR 성능·물리 시뮬레이션은 미검증이다. 사진 밖 구조와 치수는 추정이다.
+- 다음 작업: 메인 USD를 다시 열고 `factory` 또는 `workcell` 시점으로 검토한다. 필요 시 새 조명 조건에서 별도 학습 Run으로 회귀 검증한다. [사용·재실행 안내](factory_environment.md). Commit·Push는 수행하지 않았다.
+
+## 2026-10-02 — GUI Play 실행 흐름 및 VS Code 추적 방법 확인
+
+- 확인: 메인 USD의 `/World/DisplayPlayback` → `press_cp_play_behavior.py` → `timeline_display.PressCpPlayBehavior` 연결을 코드로 확인했다. 초기 Play는 비동기 Mesh 준비 후 첫 값을 적용하고, 이후 `on_update`에서 실제 경과 시간에 따라 순차 문자열과 Fabric Transform을 갱신한다.
+- 환경: 설치본 `C:/isaacsim/VERSION`은 `6.1.0-rc.26+release.49347.2d230af4.gl`이다. 로컬 VS Code Attach 설정의 포트 3000과 디버거 확장 설치 파일을 확인하고 Isaac Sim 6.1 공식 디버깅 문서와 대조했다.
+- 제안: 실행 중인 GUI에 VS Code Attach를 연결하고 `on_play`, `_prepare`, `_apply`, `FabricDisplay.apply`의 중단점 및 Logpoint로 흐름을 추적한다. 비동기 경계는 별도 중단점으로 관찰한다.
+- 검증 한계: 정적 코드·설정 확인이며 GUI 연결, 중단점 적중, Play 재실행은 수행하지 않았다. 실행 코드와 Config 변경은 없다. 다음 확인은 실제 Attach 후 Play → 값 갱신 → Pause/Stop 순서의 관찰이다.
+
+## 현재까지의 진행 요약 — 2026-10-02
 
 | 항목 | 구현·확인한 결과 | 한계·남은 작업 |
 |---|---|---|
 | 개발 환경·실영상 분석 | Phase 0·1 종료 기록, Isaac Sim 6.1.0 RC의 Standalone 실행 확인 | 실제 치수·렌즈·조도는 미측정 |
 | CP 환경 | 7 Panel·21 Module·42 Slot, 제어반·버튼·HMI·주변 환경의 USD 구성 및 재열기·렌더 검증 | 실영상과의 정량 유사성은 미확정 |
+| 공장 실내 확장 | CP 보존, 배관·밸브·프레스 외형·기둥·보·천장·창·통로, 천장등 9개·창측 보조광 4개; 생성·재열기 PASS | 사진 밖 구조·치수는 가정, 새 환경의 학습 생성·GUI Play 미검증 |
+| 카메라·실행 연결 | Scene 기본 시점 `factory`, 근접 `workcell` 추가; 학습 `training`과 기존 카메라·Play 연결 보존 | GUI에서 다시 열기·시점 선택은 직접 검증하지 않음 |
 | 숫자 자동화 | `0.0~999.0`, 기본 0.1씩 증가·상한 순환, Play/Pause/Stop 연결 | 기본 0.1초는 최소 간격; 전 범위 9,991값의 실제 렌더 저장은 미실시 |
 | 프레임 저장 | Slot별 무작위 값 선택 → 렌더 안정화 → PNG·정답 저장; 정면 중앙 직교 카메라·4K | 실제 촬영 시점 및 영상 열화와의 차이는 남음 |
 | Recognition 데이터 | 숫자 Mesh 투영 bbox + 4픽셀 여백 Crop, 문자열·Slot ID·원본 연결 | 모델 학습·독립 OCR 판독 미실시 |
@@ -19,7 +40,17 @@
 | 빛번짐 | Bloom scale 0.4, cutoff RGB 0.5, isotropic falloff RGB 5; 전후 시각 비교 | 사용자 요청에 따른 시각 조정이며 실측값·랜덤화 범위가 아님 |
 | 데이터 정리 | 기존 합성 Run·과거 출력 삭제 후 현재 설정으로 2프레임 재생성 | 삭제된 경로는 아래의 과거 실행 이력으로만 취급 |
 
-현재 사용 가능한 학습용 Run은 [`20261001T064808_756110Z`](../datasets/synthetic/cp_training/20261001T064808_756110Z/)다. 전체 프레임 2장(3840×2160), Recognition Crop 84개, YOLO Panel 14장·박스 84개를 포함한다. Seed 42, 소수점 한 자리, 값 범위 `0.0~999.0`; 프레임마다 정수부 1·2·3자리 각 14개를 무작위 Slot에 배정한다. 별도 probe 3장은 학습 프레임 수에 포함하지 않는다.
+현재 사용 가능한 학습용 Run은 [`20261001T064808_756110Z`](../datasets/synthetic/cp_training/20261001T064808_756110Z/)다. 전체 프레임 2장(3840×2160), Recognition Crop 84개, YOLO Panel 14장·박스 84개를 포함한다. Seed 42, 소수점 한 자리, 값 범위 `0.0~999.0`; 프레임마다 정수부 1·2·3자리 각 14개를 무작위 Slot에 배정한다. 별도 probe 3장은 학습 프레임 수에 포함하지 않는다. **이 데이터는 공장 실내 확장 전 생성한 Run이며, 새 조명 환경에서 학습용 이미지를 다시 생성한 것은 아니다.**
+
+현재 환경 산출물은 다음과 같다. `outputs`의 보고서와 PNG는 로컬 검증 자료이며 학습 데이터 수에 합산하지 않는다.
+
+| 산출물 | 위치·검증 근거 |
+|---|---|
+| 메인 Scene | [`press_cp_main.usda`](../isaac_sim/stages/press_cp_main.usda), 기존 CP와 새 환경 Asset의 상대 참조 |
+| 생성 보고서 | [`20261002T023626_551882Z/verification.json`](../outputs/factory_environment/20261002T023626_551882Z/verification.json), PASS·종료 코드 0 |
+| 별도 프로세스 재열기 | [`20261002T023707_135387Z/verification.json`](../outputs/factory_environment/20261002T023707_135387Z/verification.json), PASS·종료 코드 0 |
+| 실내 전경·CP 근접 | [factory.png](../outputs/factory_environment/20261002T023626_551882Z/factory.png), [workcell.png](../outputs/factory_environment/20261002T023626_551882Z/workcell.png) |
+| 설정·사용법 | [`factory_environment.json`](../config/factory_environment.json), [공장 환경 안내](factory_environment.md) |
 
 현재 Run의 [Recognition 검증](../datasets/synthetic/cp_training/20261001T064808_756110Z/validation.json)과 [YOLO 검증](../datasets/synthetic/cp_training/20261001T064808_756110Z/yolo_panels/validation.json)은 모두 PASS다. 두 프레임은 각각 48 subframe에서 안정화됐으며 생성 프로세스는 종료 코드 0으로 끝났다. Panel 14장은 원본 프레임 단위로 Train 7장·Validation 7장에 배정했다. 원본 Recognition 메타데이터의 Split은 `unassigned`이며 Real Train/Validation/Test 분할은 아직 정하지 않았다.
 
@@ -31,9 +62,16 @@
 
 실행마다 새 Run을 만들지만, 같은 Seed·프레임 번호는 같은 숫자 조합을 생성한다. `outputs/bloom_check`의 비교용 샘플을 현재 Run과 합쳐 독립 샘플로 세지 않는다. Run의 manifest에 Seed·Config·실제 적용 조건·코드/Asset Hash·기반 Commit과 dirty 상태를 기록한다. 이 작업까지 Commit·Push는 수행하지 않았다.
 
-남은 작업은 대량 생성 수량·Synthetic 실험 Split 확정, Real Train/Validation/Test 구간 분리, 단계별 영상 조건 랜덤화, OCR/YOLO 학습 환경 구성과 실제 영상 평가다. Play 중 화질 저하는 반복되는 렌더 누적 초기화가 유력 원인으로 기록돼 있으며 원인 분리 실험·GUI 직접 시각 검증은 남아 있다. Phase 4의 소규모 생성 기준은 충족했으나 전체 연구나 모델 성능 검증이 완료된 것은 아니다.
+다음 작업 제안과 완료 기준은 아래 순서다. 아직 실행한 결과나 확정된 실험 계획은 아니다.
 
-이번 문서 정리는 기존 실행 기록과 현재 Run의 manifest·validation·실제 파일 수를 대조한 작업이다. 렌더·모델 학습을 다시 실행하지 않았다. 자세한 사용법은 [연속 표시](display_playback.md), [학습 생성](training_capture.md), [YOLO 추출](panel_detection.md), 판단 근거는 [주요 결정](decisions.md)을 따른다.
+1. 새 Scene을 GUI에서 열어 `factory`·`workcell` 구도와 Play/Pause/Stop을 확인한다. 숫자 갱신·멈춤·초기화와 시점 유지를 직접 관찰하고 기록한다.
+2. 새 환경으로 소규모 별도 Run을 생성해 42개 Slot의 이미지·문자열 연결, 잔상·렌더 안정화, Crop·YOLO bbox·가림을 재검증한다. 기존 Run과 새 환경 조건을 구분한다.
+3. 대량 생성 수량·Synthetic Split과 Real Train/Validation/Test 구간을 정한다. 외형 보정에 사용한 4초 프레임·제공 프레임 및 인접 구간의 사용 이력을 반영해 누수를 방지한다.
+4. 모델·초기 가중치·전처리·학습 예산을 기록하고 Baseline·Synthetic Only·Mixed를 공통 Real Test에서 비교한다. 조건 튜닝은 Validation을 사용한다.
+
+단계별 영상 조건 랜덤화와 OCR/YOLO 학습 환경 구성도 남아 있다. Play 중 화질 저하는 반복되는 렌더 누적 초기화가 유력 원인이며 원인 분리 실험은 미실시다. Phase 4의 기존 소규모 생성 기준은 충족했으나 새 환경의 생성 회귀·전체 연구·모델 성능 검증이 완료된 것은 아니다.
+
+이번 2026-10-02 문서 정리에서는 공장 생성·재열기 보고서의 Config/코드/Asset/렌더/보존 파일 Hash가 현재 파일과 일치함을 다시 확인했다. 기존 학습 Run의 manifest·Recognition/YOLO validation과 산출물 수도 대조했다. 렌더·모델 학습·테스트를 다시 실행하지 않았으며 문서 링크·공백을 검사했다. 자세한 사용법은 [공장 환경](factory_environment.md), [연속 표시](display_playback.md), [학습 생성](training_capture.md), [YOLO 추출](panel_detection.md), 판단 근거는 [주요 결정](decisions.md)을 따른다.
 
 ## 2026-10-01 — 현재 빛번짐 설정으로 학습 프레임 2장 생성
 

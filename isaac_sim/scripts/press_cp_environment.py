@@ -318,36 +318,8 @@ def cabinet(cfg):
 
 
 def workcell(cfg):
-    s=stage("/Workcell");m=materials(s,"/Workcell",cfg);e=cfg["environment"]
-    cube(s,"/Workcell/Floor",[0,0,e["floor_z"]-.06],[6,6,.12],m["floor"])
-    cube(s,"/Workcell/Wall",[0,e["wall_y"],1.3],[6,.12,2.8],m["wall"])
-    cube(s,"/Workcell/CabinetPlinth",[0,.16,-.04],[1.8,.42,.12],m["machine"])
-    for i,x in enumerate(e["pipe_x"]):
-        y=e["pipe_y"]+i*.08
-        cylinder(s,f"/Workcell/Pipe_{i}/Riser",[x,y,.66],.075,1.4,m["machine"],"Z")
-        for j,z in enumerate([.15,.48,.95]):
-            cylinder(s,f"/Workcell/Pipe_{i}/Flange_{j}",[x,y,z],.115,.045,m["silver"],"Z")
-            for k in range(8):
-                a=k*math.pi/4
-                cylinder(s,f"/Workcell/Pipe_{i}/Bolt_{j}_{k}",[x+.093*math.cos(a),y+.093*math.sin(a),z+.028],.010,.018,m["black"],"Z")
-        cylinder(s,f"/Workcell/Pipe_{i}/Valve",[x,y,e["valve_z"][i]],.095,.20,m["pipe_green"],"X")
-        cylinder(s,f"/Workcell/Pipe_{i}/Stem",[x,y,e["valve_z"][i]+.13],.015,.16,m["silver"],"Z")
-        z=e["valve_z"][i]+.215
-        # 수평 밸브 휠: 튜브 대신 원주를 Mesh로 작성한다.
-        pts=[];faces=[]
-        for j in range(48):
-            a=2*math.pi*j/48
-            for rr in [.105,.119]: pts.append([x+rr*math.cos(a),y+rr*math.sin(a),z])
-        for j in range(48): faces.append([2*j,2*j+1,(2*(j+1)+1)%96,2*(j+1)%96])
-        mesh(s,f"/Workcell/Pipe_{i}/Wheel",pts,[4]*48,[v for f in faces for v in f],m["valve_blue"])
-        cube(s,f"/Workcell/Pipe_{i}/SpokeX",[x,y,z],[.22,.012,.012],m["valve_blue"])
-        cube(s,f"/Workcell/Pipe_{i}/SpokeY",[x,y,z],[.012,.22,.012],m["valve_blue"])
-    cube(s,"/Workcell/LeftMachine/Base",[-1.22,.04,.22],[.49,.65,.58],m["machine"])
-    cube(s,"/Workcell/LeftMachine/Top",[-1.19,.03,.57],[.6,.69,.065],m["silver"])
-    for i in range(3):
-        cylinder(s,f"/Workcell/LeftMachine/Riser_{i}",[-1.37+i*.14,.17,.94],.027,.65,m["silver"],"Z")
-        cylinder(s,f"/Workcell/LeftMachine/Cross_{i}",[-1.37+i*.14,0,1.24],.027,.35,m["black"],"Y")
-    save(s,ENVIRONMENT)
+    from factory_environment import build_workcell
+    build_workcell(cfg)
 
 
 def aim(prim,settings):
@@ -389,6 +361,8 @@ def build():
     configure_training_camera(s,json.loads((ROOT/"config/training_capture.json").read_text(encoding="utf-8"))["camera"])
     s.GetRootLayer().customLayerData={**s.GetRootLayer().customLayerData,"cameraSettings":{"boundCamera":"/World/Cameras/training"}}
     author_render_settings(s,cfg)
+    from factory_environment import configure_scene
+    configure_scene(s)
     save(s,SCENE)
     return cfg
 

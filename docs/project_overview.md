@@ -2,7 +2,9 @@
 
 작성일: 2026-09-30 (Asia/Seoul)
 
-현재 구현 상태 갱신: 2026-10-01 (Asia/Seoul).
+현재 구현 상태 갱신: 2026-10-02 (Asia/Seoul).
+
+환경 확장 갱신: 2026-10-02. 기존 CP 7 Panel·21 Module·42 Slot을 보존하고 주변 배관·설비와 공장 실내 구조를 추가했다. 메인 USD 기본 시점은 `factory`, 학습 카메라는 기존 `training`이다. 사진 밖 구조는 추정 모델이며 [공장 환경 안내](factory_environment.md)와 [진행 상황](progress.md)에 실제 생성·재열기·렌더 검증을 기록했다.
 
 기준 자료: [프레스 CP AI 모니터링 시스템 Digital Twin — Notion](https://app.notion.com/p/CP-AI-Digital-Twin-3e944825e9c680f9a9ace42c09e042ef)
 
@@ -81,6 +83,8 @@ Detection이나 Crop 추출은 Recognition 실험에 필요한 입력 처리로 
 | 영상 효과 | 번짐/Glow, Blur, Noise, Depth of Field 필요성 | 숫자 경계와 작은 문자·기호의 가독성 비교 |
 
 현재 숫자는 발광 재질을 적용한 세그먼트 Mesh로 구현했고, 미리 준비한 숫자 Mesh를 Fabric Transform으로 선택·배치한다. 렌더러 FFT Bloom으로 빛번짐을 표현하며 현재 scale 0.4, cutoff RGB 0.5, isotropic falloff RGB 5다. 이는 시각 조정값이며 실측 광학값이나 최종 랜덤화 범위는 아니다. Base Scene과 실영상의 정량 비교 및 최종 허용 기준은 남아 있다.
+
+2026-10-02에는 CP Asset·텍스처·표시 문자열과 기존 카메라를 보존한 채 주변 배관·설비 및 공장 실내를 확장했다. 천장등 9개와 창측 보조광 4개를 추가하고 `factory`·`workcell` 카메라를 제공한다. 생성·별도 프로세스 재열기·실제 렌더 검증은 통과했으며, 사진 밖 건축과 가상 치수는 관측 사실과 구분한 추정 모델이다. 새 환경에서의 GUI Play와 학습 데이터 생성은 후속 회귀 검증 대상으로 남아 있다.
 
 ## 6. Dataset 생성
 
@@ -211,6 +215,8 @@ Phase 5의 조건 선택에는 Validation을 사용하며, 필요하면 Phase 6�
 | 현재 Phase·완료 근거·문제·다음 Task | docs/progress.md |
 | 채택한 판단·이유·영향 | docs/decisions.md |
 
-2026-10-01 현재 7 Panel·21 Module·42 Slot의 CP 환경, `0.0~999.0` 순차 표시, 프레임별 무작위 숫자 선택·렌더 안정화·이미지/정답 저장, Panel 단위 YOLO 내보내기가 구현됐다. 기존 합성 산출물 정리 후 현재 빛번짐 설정으로 `20261001T064808_756110Z` Run을 새로 생성했다. 전체 프레임 2장·Crop 84개·YOLO Panel 14장/박스 84개이며 생성 및 저장 데이터 검증을 통과했다.
+2026-10-02 현재 7 Panel·21 Module·42 Slot의 CP와 공장 실내 환경, `0.0~999.0` 순차 표시, 프레임별 무작위 숫자 선택·렌더 안정화·이미지/정답 저장, Panel 단위 YOLO 내보내기를 구현했다. 공장 환경 생성 `20261002T023626_551882Z`와 재열기 `20261002T023707_135387Z`는 모두 PASS·정상 종료 코드 0이며, 보고서와 렌더는 `outputs/factory_environment/` 아래에 있다.
 
-현재 산출물과 재실행 명령, 과거 삭제된 검증 이력은 [progress.md](progress.md)에서 구분한다. 다음 작업은 생성 규모와 실험 분할 조건을 정하고 모델 학습·실영상 평가로 연결하는 것이다. 이 문서 정리에서는 코드 변경·추가 렌더·학습·Commit/Push를 수행하지 않았다.
+현재 학습 Run `20261001T064808_756110Z`는 전체 프레임 2장·Crop 84개·YOLO Panel 14장/박스 84개이며 생성 및 저장 데이터 검증을 통과했다. **공장 환경 확장 전 생성한 Run**으로 유지하며, 현재 Scene의 새 조명 조건에서 생성 검증을 완료한 데이터로 간주하지 않는다.
+
+현재 산출물과 재실행 명령, 과거 삭제된 검증 이력은 [progress.md](progress.md)에서 구분한다. 다음 작업 제안은 새 환경의 GUI 시점·Play 확인과 소규모 학습 생성 회귀 검증이다. 이후 생성 규모와 Real/Synthetic 분할 조건을 정하고 Baseline·Synthetic Only·Mixed 학습 및 공통 Real Test 평가로 연결한다. 이번 문서 갱신은 저장된 보고서·파일 대조만 수행했으며 코드 변경·추가 렌더·학습·Commit/Push는 하지 않았다.
